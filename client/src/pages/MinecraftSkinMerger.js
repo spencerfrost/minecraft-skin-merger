@@ -6,7 +6,7 @@ import SkinViewer3D from '../components/SkinViewer3D';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 
-const API_URL = '/api';
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api';
 
 const skinParts = [
   "Head",
@@ -83,14 +83,14 @@ const MinecraftSkinMergerPage = () => {
     formData.append('selectedParts', JSON.stringify(selectedParts));
 
     try {
+      // print the novde env
+      console.log('NODE_ENV:', process.env.NODE_ENV);
       console.log('Sending request to:', `${API_URL}/merge-skins`);
       const response = await fetch(`${API_URL}/merge-skins`, {
         method: 'POST',
         body: formData,
       });
-      console.log('Response status:', response.status);
       const text = await response.text();
-      console.log('Response text:', text);
       
       if (response.ok) {
         const data = JSON.parse(text);
