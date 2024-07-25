@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
-import BodyPartSelector from "../components/SkinPartSelector";
-import SkinTexture2D from "../components/SkinTexture2D";
-import SkinUploader from "../components/SkinUploader";
-import SkinViewer3D from "../components/SkinViewer3D";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
-import { Button } from "../components/ui/button";
+import { useEffect, useState } from 'react';
+import SkinPartSelector from '../components/SkinPartSelector';
+import SkinTexture2D from '../components/SkinTexture2D';
+import SkinUploader from '../components/SkinUploader';
+import SkinViewer3D from '../components/SkinViewer3D';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Button } from '../components/ui/button';
 
-const API_URL =
-  process.env.NODE_ENV === "production"
-    ? "/api/merge-skins"
-    : "http://localhost:3002/api/merge-skins";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const skinParts = [
   "Head",
@@ -72,33 +69,44 @@ const MinecraftSkinMergerPage = () => {
     const formData = new FormData();
     skins.forEach((skin, index) => {
       if (skin) {
-        const byteString = atob(skin.split(",")[1]);
-        const mimeString = skin.split(",")[0].split(":")[1].split(";")[0];
+        const byteString = atob(skin.split(',')[1]);
+        const mimeString = skin.split(',')[0].split(':')[1].split(';')[0];
         const ab = new ArrayBuffer(byteString.length);
         const ia = new Uint8Array(ab);
         for (let i = 0; i < byteString.length; i++) {
           ia[i] = byteString.charCodeAt(i);
         }
         const blob = new Blob([ab], { type: mimeString });
-        formData.append("skins", blob, `skin${index}.png`);
+        formData.append('skins', blob, `skin${index}.png`);
       }
     });
-    formData.append("selectedParts", JSON.stringify(selectedParts));
+    formData.append('selectedParts', JSON.stringify(selectedParts));
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
+      console.log('Sending request to:', `${API_URL}/merge-skins`);
+      const response = await fetch(`${API_URL}/merge-skins`, {
+        method: 'POST',
         body: formData,
       });
-      const data = await response.json();
+      console.log('Response status:', response.status);
+      const text = await response.text();
+      console.log('Response text:', text);
+      
       if (response.ok) {
-        setMergedSkin(data.mergedSkinUrl);
+        const data = JSON.parse(text);
+        if (data.mergedSkinUrl) {
+          setMergedSkin(data.mergedSkinUrl);
+        } else {
+          setError('Unexpected response format');
+          console.error('Unexpected response format:', data);
+        }
       } else {
-        setError(data.error || "An error occurred");
+        setError(`Error: ${response.status} ${response.statusText}`);
+        console.error('Server responded with:', text);
       }
     } catch (error) {
-      setError("Error merging skins");
-      console.error("Error merging skins:", error);
+      setError('Error merging skins');
+      console.error('Error merging skins:', error);
     }
   };
 
@@ -117,7 +125,7 @@ const MinecraftSkinMergerPage = () => {
         ))}
       </div>
 
-      <BodyPartSelector
+      <SkinPartSelector
         skins={skins}
         selectedParts={selectedParts}
         onPartSelection={handlePartSelection}
