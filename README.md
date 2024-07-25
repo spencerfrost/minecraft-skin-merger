@@ -57,6 +57,10 @@ Ensure that all environment variables are set correctly for production environme
 - POST `/api/merge-skins`: Endpoint to upload skins and receive a URL to the merged skin image.
 - GET `/download/:filename`: Endpoint to download the merged skin image directly.
 
+## Future features
+- Add search field to GET skins from an api
+- Visual body part selection
+
 ## Contributing
 Contributions are welcome! Please feel free to submit a pull request.
 

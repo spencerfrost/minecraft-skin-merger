@@ -26,7 +26,7 @@ const SkinPartSelector = ({ skins, selectedParts, onPartSelection }) => {
           </SelectTrigger>
           <SelectContent>
             {skins.map((skin, index) => (
-              <SelectItem key={`skin-${skin ? skin : index}`} value={index.toString()} disabled={!skin}>
+              <SelectItem key={`skin-${skin || index}`} value={index.toString()} disabled={!skin}>
                 Skin {index + 1}
               </SelectItem>
             ))}
