@@ -21,6 +21,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 const regions = {
   'Head': { left: 0, top: 0, width: 32, height: 16 },
