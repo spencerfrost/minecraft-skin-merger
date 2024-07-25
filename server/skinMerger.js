@@ -19,15 +19,8 @@ const regions = {
 };
 
 async function mergeSkins(req, res) {
-  console.log('Received request:', {
-    body: req.body,
-    files: req.files ? req.files.map(f => f.filename) : 'No files'
-  });
-
   try {
     let selectedParts = JSON.parse(req.body.selectedParts);
-    console.log('Parsed selectedParts:', selectedParts);
-
     const skins = req.files;
 
     if (!skins || skins.length === 0) {
@@ -74,7 +67,6 @@ async function mergeSkins(req, res) {
 
     const mergedSkinUrl = `${DOMAIN}/public/${outputFileName}`;
 
-    console.log('Sending response:', { mergedSkinUrl });
     res.json({ mergedSkinUrl });
   } catch (error) {
     console.error('Error merging skins:', error);

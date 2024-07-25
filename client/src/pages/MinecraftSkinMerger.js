@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
+import MergedSkinViewer from '../components/MergedSkinViewer';
 import SkinPartSelector from '../components/SkinPartSelector';
-import SkinTexture2D from '../components/SkinTexture2D';
 import SkinUploader from '../components/SkinUploader';
-import SkinViewer3D from '../components/SkinViewer3D';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 
@@ -47,10 +46,7 @@ const MinecraftSkinMergerPage = () => {
   // This effect will run when skins change
   useEffect(() => {
     // If there's at least one skin uploaded and no parts are selected yet
-    if (
-      skins.some((skin) => skin !== null) &&
-      Object.keys(selectedParts).length === 0
-    ) {
+    if (skins.some((skin) => skin !== null) && Object.keys(selectedParts).length === 0) {
       const firstSkinIndex = skins.findIndex((skin) => skin !== null);
       const newSelectedParts = {};
       skinParts.forEach((part) => {
@@ -58,7 +54,7 @@ const MinecraftSkinMergerPage = () => {
       });
       setSelectedParts(newSelectedParts);
     }
-  }, [skins, selectedParts]);
+  }, [skins]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePartSelection = (part, skinIndex) => {
     setSelectedParts({ ...selectedParts, [part]: skinIndex });
@@ -83,9 +79,6 @@ const MinecraftSkinMergerPage = () => {
     formData.append('selectedParts', JSON.stringify(selectedParts));
 
     try {
-      // print the novde env
-      console.log('NODE_ENV:', process.env.NODE_ENV);
-      console.log('Sending request to:', `${API_URL}/merge-skins`);
       const response = await fetch(`${API_URL}/merge-skins`, {
         method: 'POST',
         body: formData,
@@ -117,7 +110,7 @@ const MinecraftSkinMergerPage = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         {skins.map((skin, index) => (
           <SkinUploader
-            key={index}
+            key={`skinUploader-${skin ? skin.name : index}`}
             index={index}
             skin={skin}
             onUpload={handleSkinUpload}
@@ -135,21 +128,8 @@ const MinecraftSkinMergerPage = () => {
         Merge Skins
       </Button>
 
-      {mergedSkin && (
-        <div className="mt-4">
-          <h2 className="text-xl font-bold mb-2">Merged Skin</h2>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="md:w-1/2">
-              <h3 className="text-lg font-semibold mb-2">2D Texture</h3>
-              <SkinTexture2D skinUrl={mergedSkin} />
-            </div>
-            <div className="md:w-1/2">
-              <h3 className="text-lg font-semibold mb-2">3D Preview</h3>
-              <SkinViewer3D skinUrl={mergedSkin} />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* If merged skin is available, display it with MergedSkinViewer */}
+      {mergedSkin && <MergedSkinViewer mergedSkin={mergedSkin} />}
 
       {error && (
         <Alert variant="destructive">

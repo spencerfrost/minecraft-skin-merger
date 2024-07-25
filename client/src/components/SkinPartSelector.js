@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const skinParts = [
@@ -25,7 +26,7 @@ const SkinPartSelector = ({ skins, selectedParts, onPartSelection }) => {
           </SelectTrigger>
           <SelectContent>
             {skins.map((skin, index) => (
-              <SelectItem key={index} value={index.toString()} disabled={!skin}>
+              <SelectItem key={`skin-${skin}`} value={index.toString()} disabled={!skin}>
                 Skin {index + 1}
               </SelectItem>
             ))}
@@ -34,6 +35,12 @@ const SkinPartSelector = ({ skins, selectedParts, onPartSelection }) => {
       ))}
     </div>
   );
+};
+
+SkinPartSelector.propTypes = {
+  skins: PropTypes.array.isRequired,
+  selectedParts: PropTypes.array.isRequired,
+  onPartSelection: PropTypes.func.isRequired,
 };
 
 export default SkinPartSelector;
