@@ -8,16 +8,18 @@ const cors = require('cors');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
+
 const PORT = process.env.PORT || 3002;
+const isDev = process.env.NODE_ENV !== 'production';
 
-// Enable CORS for all routes
-app.use(cors({
-  origin: 'http://localhost:3000', // Allow requests from the React dev server
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow specific methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
-}));
+const corsOptions = {
+  origin: isDev ? 'http://localhost:3000' : 'https://mcskinmerger.mrspinn.ca',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 
-app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(cors(corsOptions));
+
 
 const regions = {
   'Head': { left: 0, top: 0, width: 32, height: 16 },
@@ -98,10 +100,16 @@ app.post('/api/merge-skins', upload.array('skins', 4), async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-});
+if (!isDev) {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+
+  // The "catchall" handler: for any request that doesn't
+  // match one above, send back React's index.html file.
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  });
+}
 
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  console.log(`Server is running in ${isDev ? 'development' : 'production'} mode on port ${PORT}`);
 });
