@@ -67,10 +67,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Spencer Frost
 
 ```
-
-### Additional Notes:
-- **GitHub URL**: Replace `"https://github.com/yourusername/minecraft-skin-merger.git"` with the actual URL of your GitHub repository.
-- **Ports**: Make sure the ports mentioned match your configuration in the `server.js` file.
-- **License File**: Include a `LICENSE` file in your repository if it's mentioned in the README.
-
-This README provides a comprehensive guide to getting started with the Minecraft Skin Merger project, ensuring that anyone who wants to use or contribute to the project has all the information they need.
