@@ -16,6 +16,13 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.post('/api/merge-skins', upload.array('skins', 4), mergeSkins);
 
+app.get('/download/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filepath = path.join(__dirname, 'public', filename);
+  res.download(filepath); // This will set headers to trigger download
+});
+
+
 if (!isDev) {
   app.use(express.static(path.join(__dirname, '../client/build')));
 
