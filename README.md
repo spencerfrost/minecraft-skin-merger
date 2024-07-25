@@ -30,12 +30,6 @@ To set up the Minecraft Skin Merger application on your local machine, follow th
    npm run install-all
    ```
 
-3. **Build the client application**
-   Before running the server, make sure to build the client application.
-   ```bash
-   npm run build
-   ```
-
 ## Usage
 
 ### Development
@@ -43,13 +37,20 @@ To run both the client and the server in development mode with hot reloading, us
 ```bash
 npm run dev
 ```
-This command will start the frontend development server on `http://localhost:3000` and the backend server on `http://localhost:5000`.
+This command will start the frontend development server on `http://localhost:3000` and the backend server on `http://localhost:3002`.
 
 ### Production
 To run the application in production mode:
-```bash
-npm start
-```
+
+1. **Build the client application**
+   Before running the server, make sure to build the client application.
+   ```bash
+   npm run build
+   ```
+2. **Start the production server**
+   ```bash
+   npm run start
+   ```
 Ensure that all environment variables are set correctly for production environments.
 
 ## API Endpoints
