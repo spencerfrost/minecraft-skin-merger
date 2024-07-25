@@ -26,7 +26,7 @@ const SkinPartSelector = ({ skins, selectedParts, onPartSelection }) => {
           </SelectTrigger>
           <SelectContent>
             {skins.map((skin, index) => (
-              <SelectItem key={`skin-${skin}`} value={index.toString()} disabled={!skin}>
+              <SelectItem key={`skin-${skin ? skin : index}`} value={index.toString()} disabled={!skin}>
                 Skin {index + 1}
               </SelectItem>
             ))}
@@ -39,7 +39,7 @@ const SkinPartSelector = ({ skins, selectedParts, onPartSelection }) => {
 
 SkinPartSelector.propTypes = {
   skins: PropTypes.array.isRequired,
-  selectedParts: PropTypes.array.isRequired,
+  selectedParts: PropTypes.object.isRequired,
   onPartSelection: PropTypes.func.isRequired,
 };
 
