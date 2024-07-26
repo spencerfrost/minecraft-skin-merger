@@ -43,6 +43,17 @@ const MinecraftSkinMergerPage = () => {
     }
   };
 
+  const handleSkinDelete = (index) => {
+    const newSkins = [...skins];
+    newSkins[index] = null;
+    setSkins(newSkins);
+    
+    // If this is the last skin deleted, clear all selected parts
+    if (newSkins.every((skin) => skin === null)) {
+      setSelectedParts({});
+    }
+  };
+
   // This effect will run when skins change
   useEffect(() => {
     // If there's at least one skin uploaded and no parts are selected yet
@@ -63,28 +74,54 @@ const MinecraftSkinMergerPage = () => {
   const mergeSkins = async () => {
     setError(null);
     const formData = new FormData();
+  
     skins.forEach((skin, index) => {
       if (skin) {
-        const byteString = atob(skin.split(',')[1]);
-        const mimeString = skin.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
+        try {
+          // Debugging: Log the skin data
+          console.log(`Processing skin at index ${index}:`, skin);
+  
+          // Extract base64 data and MIME type
+          const base64Data = skin.split(',')[1];
+          const mimeString = skin.split(',')[0].split(':')[1].split(';')[0];
+  
+          // Decode base64 to binary data
+          const byteString = atob(base64Data);
+  
+          // Convert binary string to typed array
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+  
+          // Create blob from typed array
+          const blob = new Blob([ab], { type: mimeString });
+          formData.append('skins', blob, `skin${index}.png`);
+  
+        } catch (error) {
+          console.error(`Error processing skin at index ${index}:`, error);
+          // Optionally continue with next skin or handle error differently
         }
-        const blob = new Blob([ab], { type: mimeString });
-        formData.append('skins', blob, `skin${index}.png`);
       }
     });
+  
+    // Append additional data
     formData.append('selectedParts', JSON.stringify(selectedParts));
-
+  
     try {
+      // Debugging: Log form submission attempt
+      console.log('Attempting to submit form data:', formData);
+  
       const response = await fetch(`${API_URL}/merge-skins`, {
         method: 'POST',
         body: formData,
       });
       const text = await response.text();
-      
+  
+      // Debugging: Log server response
+      console.log('Server response:', text);
+  
       if (response.ok) {
         const data = JSON.parse(text);
         if (data.mergedSkinUrl) {
@@ -95,13 +132,13 @@ const MinecraftSkinMergerPage = () => {
         }
       } else {
         setError(`Error: ${response.status} ${response.statusText}`);
-        console.error('Server responded with:', text);
+        console.error('Server responded with error:', text);
       }
     } catch (error) {
       setError('Error merging skins');
-      console.error('Error merging skins:', error);
+      console.error('Network or other error during merging skins:', error);
     }
-  };
+  };  
 
   return (
     <div className="container mx-auto p-4">
@@ -114,6 +151,7 @@ const MinecraftSkinMergerPage = () => {
             index={index}
             skin={skin}
             onUpload={handleSkinUpload}
+            onDelete={handleSkinDelete}
           />
         ))}
       </div>

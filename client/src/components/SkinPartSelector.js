@@ -20,18 +20,25 @@ const SkinPartSelector = ({ skins, selectedParts, onPartSelection }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
       {skinParts.map((part) => (
-        <Select key={part} onValueChange={(value) => onPartSelection(part, parseInt(value))}>
-          <SelectTrigger>
-            <SelectValue placeholder={`Select ${part}`} />
-          </SelectTrigger>
-          <SelectContent>
-            {skins.map((skin, index) => (
-              <SelectItem key={`skin-${skin || index}`} value={index.toString()} disabled={!skin}>
-                Skin {index + 1}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div key={part} className="skin-part-selector">
+          <label htmlFor={`select-${part}`} className="select-label">{part}</label>
+          <Select
+            id={`select-${part}`}
+            value={selectedParts[part]?.toString()}
+            onValueChange={(value) => onPartSelection(part, parseInt(value))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={`Select ${part}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {skins.map((skin, index) => (
+                <SelectItem key={`skin-${skin || index}`} value={index.toString()} disabled={!skin}>
+                  Skin {index + 1}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       ))}
     </div>
   );

@@ -1,9 +1,10 @@
-import { Upload } from 'lucide-react';
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Search, Upload, X } from "lucide-react";
+import { useState } from "react";
+import '../styles/SkinUploader.css';
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
-const SkinUploader = ({ index, skin, onUpload }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSkinUpload = (event) => {
     const file = event.target.files[0];
@@ -20,25 +21,62 @@ const SkinUploader = ({ index, skin, onUpload }) => {
     event.preventDefault(); // Prevent form submission from reloading the page
     if (!searchTerm.trim()) return; // Optional: prevent search with empty query
 
-    const endpoint = `/v1/skin/${encodeURIComponent(searchTerm)}`; // or /v1/body/:name for the body
-    const url = `https://skins.danielraybone.com${endpoint}`;
+    // use server endpoint to fetch skin.
+    // if you're running the server locally, you can use the following URL:
+    const domain =
+      process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
+    const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
 
     try {
       const response = await fetch(url);
       const blob = await response.blob(); // Assuming the response is an image
-      const imageUrl = URL.createObjectURL(blob);
+      const skinUrl = URL.createObjectURL(blob);
+      try {
+        const imageUrl = await convertBlobUrlToBase64(skinUrl);
+        console.log(imageUrl);
+        onUpload(index, imageUrl);
+      } catch (error) {
+        console.error("Failed to convert blob to base64:", error);
+        alert("Error converting blob to base64");
+      }
 
-      onUpload(index, imageUrl);
     } catch (error) {
-      console.error('Failed to fetch skin:', error);
-      alert('Error searching for skin');
+      console.error("Failed to fetch skin:", error);
+      alert("Error searching for skin");
     }
   };
 
+  const handleDelete = () => {
+    onDelete(index);
+  };
+
+  function convertBlobUrlToBase64(blobUrl) {
+    return fetch(blobUrl)
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        }));
+}
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Skin {index + 1}</CardTitle>
+      <CardHeader className="py-4">
+        <CardTitle>
+          Skin {index + 1}
+          {/* Only show delete button if skin is uploaded */}
+          {skin && (
+            <button
+              disabled={!skin}
+              onClick={handleDelete}
+              className="float-right py-0 text-gray-500 hover:text-red-500"
+            >
+              <X />
+            </button>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSearch} className="mb-4">
@@ -49,8 +87,8 @@ const SkinUploader = ({ index, skin, onUpload }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="mr-2 p-2 border rounded"
           />
-          <button type="submit" className="p-2 bg-blue-500 text-white rounded">
-            Search
+          <button type="submit" className="px-2 text-gray-500 hover:text-blue-500">
+            <Search />
           </button>
         </form>
         {skin ? (
