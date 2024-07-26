@@ -20,7 +20,6 @@ const MergedSkinViewer = ({ mergedSkin }) => {
 
   return (
     <div className="mt-4">
-      <h2 className="text-xl font-bold mb-2">Merged Skin</h2>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="md:w-1/2">
           <h3 className="text-lg font-semibold mb-2">2D Texture</h3>

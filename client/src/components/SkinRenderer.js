@@ -19,7 +19,7 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
     "Right Pant": { x: 16, y: 80, w: 16, h: 48 },
   };
 
-  const isOverlayPart = (part) => ['Hat', 'Jacket', 'LeftSleeve', 'RightSleeve', 'LeftPant', 'RightPant'].includes(part);
+  const isOverlayPart = (part) => ['Hat', 'Jacket', 'Left Sleeve', 'Right Sleeve', 'Left Pant', 'Right Pant'].includes(part);
 
   useEffect(() => {
     const canvas = canvasRef.current;

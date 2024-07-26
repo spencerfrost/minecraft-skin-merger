@@ -125,7 +125,13 @@ const MinecraftSkinMergerPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8 text-center">Minecraft Skin Merger</h1>
+      <h1 className="text-3xl font-bold mb-2 text-center">Minecraft Skin Merger</h1>
+      {/* By Spencer Frost */}
+      <h5 className="text-xl font-bold mb-2 text-center">By Spencer Frost</h5>
+      <p className="text-center mb-8">
+        Upload up to 4 skins, select the body parts, and then merge them together to create a new skin.
+      </p>
+
 
       <div className="flex flex-col lg:flex-row gap-4 mb-8">
         <div className="lg:w-1/4">
