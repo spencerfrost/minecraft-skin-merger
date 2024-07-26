@@ -110,7 +110,6 @@ const MinecraftSkinMergerPage = () => {
     formData.append('selectedParts', JSON.stringify(selectedParts));
   
     try {
-      // Debugging: Log form submission attempt
       console.log('Attempting to submit form data:', formData);
   
       const response = await fetch(`${API_URL}/merge-skins`, {

@@ -1,38 +1,36 @@
-const express = require('express');
-const multer = require('multer');
-const cors = require('cors');
-const path = require('path');
-const { PORT, isDev, DOMAIN, corsOptions } = require('./config');
-const { mergeSkins } = require('./skinMerger');
-const fetchSkin = require('./fetchSkin');
+import cors from "cors";
+import express from "express";
+import path from "path";
+import config from "./config.js";
+import routes from "./routes.js";
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
 
-app.use(cors(corsOptions));
+// Middleware
+app.use(cors(config.corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
+// Static file serving with detailed logging
+app.use(
+  "/public",
+  (req, res, next) => {
+    const fullPath = path.join(config.PUBLIC_DIR, req.url);
+    console.log(`Attempting to serve: ${fullPath}`);
+    next();
+  },
+  express.static(config.PUBLIC_DIR)
+);
 
-app.post('/api/merge-skins', upload.array('skins', 4), mergeSkins);
+// Use the routes
+app.use(routes);
 
-app.get('/api/fetch-skin/:name', fetchSkin);
-
-app.get('/download/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const filepath = path.join(__dirname, 'public', filename);
-  res.download(filepath);
-});
-
-
-if (!isDev) {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
-  });
-}
-
-app.listen(PORT, () => {
-  console.log(`Server is running in ${isDev ? 'development' : 'production'} mode on port ${PORT}`);
+// Start server
+app.listen(config.PORT, () => {
+  console.log(
+    `Server is running in ${
+      config.isDev ? "development" : "production"
+    } mode on ${config.DOMAIN}`
+  );
+  console.log(`Serving static files from: ${config.PUBLIC_DIR}`);
 });
