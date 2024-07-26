@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../styles/SkinUploader.css";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
-const SkinUploader = ({ index, skin, image, onUpload, onDelete }) => {
+const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSkinUpload = (event) => {
@@ -18,26 +18,24 @@ const SkinUploader = ({ index, skin, image, onUpload, onDelete }) => {
   };
 
   const handleSearch = async (event) => {
-    event.preventDefault(); // Prevent form submission from reloading the page
-    if (!searchTerm.trim()) return; // Optional: prevent search with empty query
+    event.preventDefault();
+    if (!searchTerm.trim()) return;
 
-    // use server endpoint to fetch skin.
-    // if you're running the server locally, you can use the following URL:
     const domain = process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
     const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
 
     try {
       const response = await fetch(url);
-      const blob = await response.blob(); // Assuming the response is an image
+      const blob = await response.blob();
       const skinUrl = URL.createObjectURL(blob);
-      try {
-        const imageUrl = await convertBlobUrlToBase64(skinUrl);
-        console.log(imageUrl);
-        onUpload(index, imageUrl, skinUrl);
-      } catch (error) {
+
+      convertBlobUrlToBase64(skinUrl).then(base64 => {
+        onUpload(index, base64);
+        URL.revokeObjectURL(skinUrl);
+      }).catch(error => {
         console.error("Failed to convert blob to base64:", error);
         alert("Error converting blob to base64");
-      }
+      });
     } catch (error) {
       console.error("Failed to fetch skin:", error);
       alert("Error searching for skin");
@@ -50,13 +48,8 @@ const SkinUploader = ({ index, skin, image, onUpload, onDelete }) => {
 
   function convertBlobUrlToBase64(blobUrl) {
     return fetch(blobUrl)
-      .then((response) => response.blob())
-      .then((blob) => {
-        // Check if the MIME type is already image/png
-        if (blob.type !== "image/png") {
-          // Create a new blob with the correct MIME type if necessary
-          blob = new Blob([blob], { type: "image/png" });
-        }
+      .then(response => response.blob())
+      .then(blob => {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result);
@@ -71,10 +64,8 @@ const SkinUploader = ({ index, skin, image, onUpload, onDelete }) => {
       <CardHeader className="py-4">
         <CardTitle>
           Skin {index + 1}
-          {/* Only show delete button if skin is uploaded */}
           {skin && (
             <button
-              disabled={!skin}
               onClick={handleDelete}
               className="float-right py-0 text-gray-500 hover:text-red-500"
             >
@@ -92,15 +83,12 @@ const SkinUploader = ({ index, skin, image, onUpload, onDelete }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="mr-2 p-2 border rounded"
           />
-          <button
-            type="submit"
-            className="px-2 text-gray-500 hover:text-blue-500"
-          >
+          <button type="submit" className="px-2 text-gray-500 hover:text-blue-500">
             <Search />
           </button>
         </form>
         {skin ? (
-          <img src={image} alt={`Skin ${index + 1}`} className="w-full h-auto" />
+          <img src={skin} alt={`Skin ${index}`} className="w-full h-auto" />
         ) : (
           <div className="flex items-center justify-center h-32 bg-gray-100 rounded">
             <label className="cursor-pointer">
