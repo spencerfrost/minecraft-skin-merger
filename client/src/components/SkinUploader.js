@@ -1,6 +1,6 @@
 import { Search, Upload, X } from "lucide-react";
 import { useState } from "react";
-import '../styles/SkinUploader.css';
+import "../styles/SkinUploader.css";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
@@ -39,7 +39,6 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
         console.error("Failed to convert blob to base64:", error);
         alert("Error converting blob to base64");
       }
-
     } catch (error) {
       console.error("Failed to fetch skin:", error);
       alert("Error searching for skin");
@@ -52,14 +51,21 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
 
   function convertBlobUrlToBase64(blobUrl) {
     return fetch(blobUrl)
-        .then(response => response.blob())
-        .then(blob => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        }));
-}
+      .then((response) => response.blob())
+      .then((blob) => {
+        // Check if the MIME type is already image/png
+        if (blob.type !== "image/png") {
+          // Create a new blob with the correct MIME type if necessary
+          blob = new Blob([blob], { type: "image/png" });
+        }
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      });
+  }
 
   return (
     <Card>
@@ -87,7 +93,10 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="mr-2 p-2 border rounded"
           />
-          <button type="submit" className="px-2 text-gray-500 hover:text-blue-500">
+          <button
+            type="submit"
+            className="px-2 text-gray-500 hover:text-blue-500"
+          >
             <Search />
           </button>
         </form>
