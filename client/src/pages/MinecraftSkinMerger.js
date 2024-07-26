@@ -24,14 +24,16 @@ const skinParts = [
 
 const MinecraftSkinMergerPage = () => {
   const [skins, setSkins] = useState([null, null, null, null]);
+  const [skinImages, setSkinImages] = useState([null, null, null, null]);
   const [selectedParts, setSelectedParts] = useState({});
   const [mergedSkin, setMergedSkin] = useState(null);
   const [error, setError] = useState(null);
 
-  const handleSkinUpload = (index, skin) => {
+  const handleSkinUpload = (index, skin, image) => {
     const newSkins = [...skins];
     newSkins[index] = skin;
     setSkins(newSkins);
+    setSkinImages([...skinImages.slice(0, index), image, ...skinImages.slice(index + 1)]);
 
     // If this is the first skin uploaded, set all parts to use this skin
     if (index === 0 && !skins[0]) {
@@ -47,6 +49,7 @@ const MinecraftSkinMergerPage = () => {
     const newSkins = [...skins];
     newSkins[index] = null;
     setSkins(newSkins);
+    setSkinImages([...skinImages.slice(0, index), null, ...skinImages.slice(index + 1)]);
     
     // If this is the last skin deleted, clear all selected parts
     if (newSkins.every((skin) => skin === null)) {
@@ -150,6 +153,7 @@ const MinecraftSkinMergerPage = () => {
             key={`skinUploader-${skin ? skin.name : index}`}
             index={index}
             skin={skin}
+            image={skinImages[index]}
             onUpload={handleSkinUpload}
             onDelete={handleSkinDelete}
           />

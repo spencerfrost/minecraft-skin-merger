@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../styles/SkinUploader.css";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
-const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
+const SkinUploader = ({ index, skin, image, onUpload, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSkinUpload = (event) => {
@@ -23,8 +23,7 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
 
     // use server endpoint to fetch skin.
     // if you're running the server locally, you can use the following URL:
-    const domain =
-      process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
+    const domain = process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
     const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
 
     try {
@@ -34,7 +33,7 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
       try {
         const imageUrl = await convertBlobUrlToBase64(skinUrl);
         console.log(imageUrl);
-        onUpload(index, imageUrl);
+        onUpload(index, imageUrl, skinUrl);
       } catch (error) {
         console.error("Failed to convert blob to base64:", error);
         alert("Error converting blob to base64");
@@ -101,7 +100,7 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
           </button>
         </form>
         {skin ? (
-          <img src={skin} alt={`Skin ${index + 1}`} className="w-full h-auto" />
+          <img src={image} alt={`Skin ${index + 1}`} className="w-full h-auto" />
         ) : (
           <div className="flex items-center justify-center h-32 bg-gray-100 rounded">
             <label className="cursor-pointer">
