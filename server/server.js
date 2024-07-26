@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const { PORT, isDev, DOMAIN, corsOptions } = require('./config');
 const { mergeSkins } = require('./skinMerger');
-const fetchSkin = require('./FetchSkin');
+const fetchSkin = require('./fetchSkin');
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
