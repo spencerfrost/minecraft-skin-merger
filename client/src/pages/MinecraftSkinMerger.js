@@ -1,26 +1,17 @@
-import { useEffect, useState } from 'react';
-import MergedSkinViewer from '../components/MergedSkinViewer';
-import SkinPartSelector from '../components/SkinPartSelector';
-import SkinUploader from '../components/SkinUploader';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { Button } from '../components/ui/button';
+import { useEffect, useState } from "react";
+import MergedSkinViewer from "../components/MergedSkinViewer";
+import SkinPreview from "../components/SkinPreview";
+import SkinUploader from "../components/SkinUploader";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
+import { Button } from "../components/ui/button";
 
-const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:3002/api';
+const API_URL =
+  process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3002/api";
 
-const skinParts = [
-  "Head",
-  "Hat",
-  "Body",
-  "Jacket",
-  "Left Arm",
-  "Left Sleeve",
-  "Right Arm",
-  "Right Sleeve",
-  "Left Leg",
-  "Left Pant",
-  "Right Leg",
-  "Right Pant",
-];
+  const skinParts = [
+    "Head", "Hat", "Body", "Jacket", "Left Arm", "Left Sleeve", "Right Arm", "Right Sleeve",
+    "Left Leg", "Left Pant", "Right Leg", "Right Pant"
+  ];
 
 const MinecraftSkinMergerPage = () => {
   const [skins, setSkins] = useState([null, null, null, null]);
@@ -47,17 +38,36 @@ const MinecraftSkinMergerPage = () => {
     const newSkins = [...skins];
     newSkins[index] = null;
     setSkins(newSkins);
-    
+
     // If this is the last skin deleted, clear all selected parts
     if (newSkins.every((skin) => skin === null)) {
       setSelectedParts({});
+    } else {
+      // Update selectedParts to remove references to the deleted skin
+      const updatedSelectedParts = { ...selectedParts };
+      Object.keys(updatedSelectedParts).forEach((part) => {
+        if (updatedSelectedParts[part] === index) {
+          updatedSelectedParts[part] = null;
+        }
+      });
+      setSelectedParts(updatedSelectedParts);
     }
+  };
+
+  const handlePartSelection = (part, skinIndex) => {
+    setSelectedParts((prevParts) => ({
+      ...prevParts,
+      [part]: skinIndex,
+    }));
   };
 
   useEffect(() => {
     // If there's at least one skin uploaded and no parts are selected yet
     // Set all parts to use the first skin uploaded
-    if (skins.some((skin) => skin !== null) && Object.keys(selectedParts).length === 0) {
+    if (
+      skins.some((skin) => skin !== null) &&
+      Object.keys(selectedParts).length === 0
+    ) {
       const firstSkinIndex = skins.findIndex((skin) => skin !== null);
       const newSelectedParts = {};
       skinParts.forEach((part) => {
@@ -67,10 +77,6 @@ const MinecraftSkinMergerPage = () => {
     }
   }, [skins]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handlePartSelection = (part, skinIndex) => {
-    setSelectedParts({ ...selectedParts, [part]: skinIndex });
-  };
-
   const mergeSkins = async () => {
     setError(null);
     const formData = new FormData();
@@ -78,102 +84,103 @@ const MinecraftSkinMergerPage = () => {
     skins.forEach((skin, index) => {
       if (skin) {
         try {
-          // Debugging: Log the skin data
-          console.log(`Processing skin at index ${index}:`, skin);
-  
-          // Extract base64 data and MIME type
           const base64Data = skin.split(',')[1];
-          const mimeString = skin.split(',')[0].split(':')[1].split(';')[0];
-  
-          // Decode base64 to binary data
-          const byteString = atob(base64Data);
-  
-          // Convert binary string to typed array
-          const ab = new ArrayBuffer(byteString.length);
-          const ia = new Uint8Array(ab);
-          for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
           }
-  
-          // Create blob from typed array
-          const blob = new Blob([ab], { type: mimeString });
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/png' });
           formData.append('skins', blob, `skin${index}.png`);
-  
         } catch (error) {
           console.error(`Error processing skin at index ${index}:`, error);
-          // Optionally continue with next skin or handle error differently
         }
       }
     });
   
-    // Append additional data
     formData.append('selectedParts', JSON.stringify(selectedParts));
   
     try {
-      console.log('Attempting to submit form data:', formData);
-  
       const response = await fetch(`${API_URL}/merge-skins`, {
         method: 'POST',
         body: formData,
       });
-      const text = await response.text();
   
-      // Debugging: Log server response
-      console.log('Server response:', text);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
   
-      if (response.ok) {
-        const data = JSON.parse(text);
-        if (data.mergedSkinUrl) {
-          setMergedSkin(data.mergedSkinUrl);
-        } else {
-          setError('Unexpected response format');
-          console.error('Unexpected response format:', data);
-        }
+      const data = await response.json();
+      if (data.mergedSkinUrl) {
+        setMergedSkin(data.mergedSkinUrl);
       } else {
-        setError(`Error: ${response.status} ${response.statusText}`);
-        console.error('Server responded with error:', text);
+        setError('Unexpected response format');
       }
     } catch (error) {
-      setError('Error merging skins');
-      console.error('Network or other error during merging skins:', error);
+      setError(`Error merging skins: ${error.message}`);
+      console.error('Error during skin merge:', error);
     }
-  };  
+  };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Minecraft Skin Merger</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">Minecraft Skin Merger</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        {skins.map((skin, index) => (
-          <SkinUploader
-            key={`skinUploader-${skin ? skin.name : index}`}
-            index={index}
-            skin={skin}
-            onUpload={handleSkinUpload}
-            onDelete={handleSkinDelete}
-          />
-        ))}
+      <div className="flex flex-col lg:flex-row gap-4 mb-8">
+        <div className="lg:w-1/4">
+          <div className="grid grid-cols-1 gap-4">
+            {skins.slice(0, 2).map((skin, index) => (
+              <SkinUploader
+                key={`skinUploader-${skin ? skin.name : index}`}
+                index={index}
+                skin={skin}
+                onUpload={handleSkinUpload}
+                onDelete={handleSkinDelete}
+                selectedParts={selectedParts}
+                onPartSelection={handlePartSelection}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="lg:w-1/2">
+          <div className="flex justify-center items-center h-full">
+            <SkinPreview skins={skins} selectedParts={selectedParts} />
+          </div>
+        </div>
+
+        <div className="lg:w-1/4">
+          <div className="grid grid-cols-1 gap-4">
+            {skins.slice(2, 4).map((skin, index) => (
+              <SkinUploader
+                key={`skinUploader-${skin ? skin.name : index + 2}`}
+                index={index + 2}
+                skin={skin}
+                onUpload={handleSkinUpload}
+                onDelete={handleSkinDelete}
+                selectedParts={selectedParts}
+                onPartSelection={handlePartSelection}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
-      <SkinPartSelector
-        skins={skins}
-        selectedParts={selectedParts}
-        onPartSelection={handlePartSelection}
-      />
+      <div className="mt-8 text-center">
+        <Button onClick={mergeSkins} className="mb-4">
+          Merge Skins
+        </Button>
 
-      <Button onClick={mergeSkins} className="mb-4">
-        Merge Skins
-      </Button>
+        {mergedSkin && <MergedSkinViewer mergedSkin={mergedSkin} />}
 
-      {/* If merged skin is available, display it with MergedSkinViewer */}
-      {mergedSkin && <MergedSkinViewer mergedSkin={mergedSkin} />}
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+        {error && (
+          <Alert variant="destructive">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+      </div>
     </div>
   );
 };

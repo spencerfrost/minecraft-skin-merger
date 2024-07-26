@@ -1,9 +1,17 @@
 import { Search, Upload, X } from "lucide-react";
 import { useState } from "react";
 import "../styles/SkinUploader.css";
+import MinecraftSkinRenderer from "./SkinRenderer";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
-const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
+const SkinUploader = ({
+  index,
+  skin,
+  onUpload,
+  onDelete,
+  selectedParts,
+  onPartSelection,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSkinUpload = (event) => {
@@ -21,7 +29,8 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
     event.preventDefault();
     if (!searchTerm.trim()) return;
 
-    const domain = process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
+    const domain =
+      process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
     const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
 
     try {
@@ -29,13 +38,15 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
       const blob = await response.blob();
       const skinUrl = URL.createObjectURL(blob);
 
-      convertBlobUrlToBase64(skinUrl).then(base64 => {
-        onUpload(index, base64);
-        URL.revokeObjectURL(skinUrl);
-      }).catch(error => {
-        console.error("Failed to convert blob to base64:", error);
-        alert("Error converting blob to base64");
-      });
+      convertBlobUrlToBase64(skinUrl)
+        .then((base64) => {
+          onUpload(index, base64);
+          URL.revokeObjectURL(skinUrl);
+        })
+        .catch((error) => {
+          console.error("Failed to convert blob to base64:", error);
+          alert("Error converting blob to base64");
+        });
     } catch (error) {
       console.error("Failed to fetch skin:", error);
       alert("Error searching for skin");
@@ -48,8 +59,8 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
 
   function convertBlobUrlToBase64(blobUrl) {
     return fetch(blobUrl)
-      .then(response => response.blob())
-      .then(blob => {
+      .then((response) => response.blob())
+      .then((blob) => {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result);
@@ -83,12 +94,22 @@ const SkinUploader = ({ index, skin, onUpload, onDelete }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="mr-2 p-2 border rounded"
           />
-          <button type="submit" className="px-2 text-gray-500 hover:text-blue-500">
+          <button
+            type="submit"
+            className="px-2 text-gray-500 hover:text-blue-500"
+          >
             <Search />
           </button>
         </form>
         {skin ? (
-          <img src={skin} alt={`Skin ${index}`} className="w-full h-auto" />
+          <div className="flex justify-center">
+            <MinecraftSkinRenderer
+              skinUrl={skin}
+              skinIndex={index}
+              selectedParts={selectedParts}
+              onPartSelection={onPartSelection}
+            />
+          </div>
         ) : (
           <div className="flex items-center justify-center h-32 bg-gray-100 rounded">
             <label className="cursor-pointer">

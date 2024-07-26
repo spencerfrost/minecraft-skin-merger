@@ -1,11 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
-import { fileURLToPath } from "url";
 import config from "./config.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const regions = {
   Head: { left: 0, top: 0, width: 32, height: 16 },
