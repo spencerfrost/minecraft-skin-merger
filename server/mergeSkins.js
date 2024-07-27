@@ -20,13 +20,34 @@ const regions = {
 
 export default async function mergeSkins(req, res) {
   try {
-    let selectedParts = JSON.parse(req.body.selectedParts);
+    let selectedParts;
+    try {
+      selectedParts = JSON.parse(req.body.selectedParts);
+    } catch (parseError) {
+      console.error("Error parsing selectedParts:", parseError);
+      return res.status(400).json({ error: "Invalid selectedParts data" });
+    }
+
     const skins = req.files;
+
+    if (!selectedParts || typeof selectedParts !== 'object') {
+      console.error("Invalid selectedParts data:", selectedParts);
+      return res.status(400).json({ error: "Invalid selectedParts data" });
+    }
 
     if (!skins || skins.length === 0) {
       console.log("No skin files uploaded");
       return res.status(400).json({ error: "No skin files uploaded" });
     }
+
+    // Create a mapping between skin indices and uploaded files
+    const skinMap = new Map();
+    skins.forEach((skin, index) => {
+      const originalIndex = parseInt(skin.originalname.replace(/\D/g, ''));
+      skinMap.set(originalIndex, skin);
+    });
+
+    console.log("Skin mapping:", Object.fromEntries(skinMap));
 
     const mergedSkin = sharp({
       create: {
@@ -40,7 +61,7 @@ export default async function mergeSkins(req, res) {
     const compositeOperations = [];
 
     for (const [part, skinIndex] of Object.entries(selectedParts)) {
-      const skin = skins[skinIndex];
+      const skin = skinMap.get(skinIndex);
       if (skin && regions[part]) {
         const { left, top, width, height } = regions[part];
         try {
@@ -64,41 +85,32 @@ export default async function mergeSkins(req, res) {
       }
     }
 
-    try {
-      const mergedSkinBuffer = await mergedSkin
-        .composite(compositeOperations)
-        .png() // Ensure output is PNG
-        .toBuffer();
+    const mergedSkinBuffer = await mergedSkin
+      .composite(compositeOperations)
+      .png()
+      .toBuffer();
 
-      const outputFileName = `merged-skin-${Date.now()}.png`;
-      const outputPath = path.join(config.PUBLIC_DIR, outputFileName);
+    const outputFileName = `merged-skin-${Date.now()}.png`;
+    const outputPath = path.join(config.PUBLIC_DIR, outputFileName);
 
-      await fs.mkdir(config.PUBLIC_DIR, { recursive: true });
-      await fs.writeFile(outputPath, mergedSkinBuffer);
+    await fs.mkdir(config.PUBLIC_DIR, { recursive: true });
+    await fs.writeFile(outputPath, mergedSkinBuffer);
 
-      const mergedSkinUrl = `/public/${outputFileName}`;
-      res.json({ mergedSkinUrl });
-    } catch (innerError) {
-      console.error("Failed during composite or save operations:", innerError);
-      res.status(500).json({
-        error: "Failed during composite or save operations",
-        message: innerError.message,
-      });
-    } finally {
+    const mergedSkinUrl = `/public/${outputFileName}`;
+    res.json({ mergedSkinUrl });
+
+  } catch (error) {
+    console.error("Error merging skins:", error);
+    res.status(500).json({ error: "Failed to merge skins", message: error.message });
+  } finally {
+    if (req.files) {
       await Promise.all(
-        skins.map((skin) =>
-          fs
-            .unlink(skin.path)
-            .catch((err) =>
-              console.error(`Failed to delete file ${skin.path}:`, err)
-            )
+        req.files.map((skin) =>
+          fs.unlink(skin.path).catch((err) =>
+            console.error(`Failed to delete file ${skin.path}:`, err)
+          )
         )
       );
     }
-  } catch (error) {
-    console.error("Error merging skins:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to merge skins", message: error.message });
   }
 }

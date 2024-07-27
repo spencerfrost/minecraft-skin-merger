@@ -62,8 +62,6 @@ const MinecraftSkinMergerPage = () => {
   };
 
   useEffect(() => {
-    // If there's at least one skin uploaded and no parts are selected yet
-    // Set all parts to use the first skin uploaded
     if (
       skins.some((skin) => skin !== null) &&
       Object.keys(selectedParts).length === 0
