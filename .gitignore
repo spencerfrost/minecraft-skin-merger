@@ -23,3 +23,4 @@ yarn-error.log*
 /public
 /server/uploads
 /server/public
+generate_tree.py
