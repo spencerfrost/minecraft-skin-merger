@@ -48,9 +48,7 @@ jobs:
           root: .
           paths:
             - client/build
-            - server/dist
-            - server/package.json
-            - server/package-lock.json
+            - server
 
   deploy:
     docker:
@@ -128,9 +126,8 @@ jobs:
             
             # Deploy server files and package.json
             echo "Deploying server files and package.json..."
-            scp -o StrictHostKeyChecking=no -vr /home/circleci/project/server/dist/* \
-                    /home/circleci/project/server/package*.json \
-                    $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            scp -o StrictHostKeyChecking=no -vr /home/circleci/project/server/* \
+                $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             
             # Debug: Verify server deployment
             echo "Verifying server files on the server..."
