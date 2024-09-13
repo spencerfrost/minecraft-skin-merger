@@ -62,10 +62,22 @@ jobs:
           fingerprints:
             - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
       - run:
-          name: Setup Environment Variables
+          name: Setup and Debug Environment
           command: |
+            # Unset any old variables that might be interfering
+            unset DEPLOY_PATH
+            
+            # Export necessary variables
             echo 'export SSH_USER=${SSH_USER}' >> "$BASH_ENV"
             echo 'export SSH_HOST=${SSH_HOST}' >> "$BASH_ENV"
+            
+            # Source the Bash environment
+            source "$BASH_ENV"
+            
+            # Debug prints (safe parts only)
+            echo "SSH_USER is set: $(if [ -n "$SSH_USER" ]; then echo "Yes"; else echo "No"; fi)"
+            echo "SSH_HOST is set: $(if [ -n "$SSH_HOST" ]; then echo "Yes"; else echo "No"; fi)"
+            echo "Destination path: /var/www/minecraft-skin-merger"
       - run:
           name: Deploy to Server
           command: |
