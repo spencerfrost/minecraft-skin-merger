@@ -55,7 +55,7 @@ describe('SkinViewer3D', () => {
     render(<SkinViewer3D skinUrl={mockSkinUrl} />);
     const skinViewerInstance = skinview3d.SkinViewer.mock.results[0].value;
 
-    expect(skinViewerInstance.camera.position.set).toHaveBeenCalledWith(60, 0, 0);
+    expect(skinViewerInstance.camera.position.set).toHaveBeenCalledWith(0, 0, 60);
     expect(skinViewerInstance.camera.lookAt).toHaveBeenCalledWith(0, 0, 0);
     expect(skinViewerInstance.autoRotate).toBe(false);
     expect(skinViewerInstance.zoom).toBe(0.9);
