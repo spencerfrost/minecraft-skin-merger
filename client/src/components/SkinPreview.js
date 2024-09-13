@@ -1,23 +1,23 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 
+const bodyParts = {
+  Head: { x: 8, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
+  Body: { x: 20, y: 20, w: 8, h: 12, dx: 48, dy: 96, dw: 96, dh: 144 },
+  Hat: { x: 40, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
+  Jacket: { x: 20, y: 36, w: 8, h: 12, dx: 48, dy: 96, dw: 96, dh: 144 },
+  "Left Arm": { x: 36, y: 52, w: 4, h: 12, dx: 144, dy: 96, dw: 48, dh: 144 },
+  "Right Arm": { x: 44, y: 20, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
+  "Left Leg": { x: 20, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
+  "Right Leg": { x: 4, y: 20, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
+  "Left Sleeve": { x: 52, y: 52, w: 4, h: 12, dx: 144, dy: 96, dw: 48, dh: 144 },
+  "Right Sleeve": { x: 44, y: 36, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
+  "Left Pant": { x: 4, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
+  "Right Pant": { x: 4, y: 36, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
+};
+
 const SkinPreview = ({ skins, selectedParts }) => {
   const canvasRef = useRef(null);
-
-  const bodyParts = {
-    Head: { x: 8, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
-    Body: { x: 20, y: 20, w: 8, h: 12, dx: 48, dy: 96, dw: 96, dh: 144 },
-    Hat: { x: 40, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
-    Jacket: { x: 20, y: 36, w: 8, h: 12, dx: 48, dy: 96, dw: 96, dh: 144 },
-    "Left Arm": { x: 36, y: 52, w: 4, h: 12, dx: 144, dy: 96, dw: 48, dh: 144 },
-    "Right Arm": { x: 44, y: 20, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
-    "Left Leg": { x: 20, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
-    "Right Leg": { x: 4, y: 20, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
-    "Left Sleeve": { x: 52, y: 52, w: 4, h: 12, dx: 144, dy: 96, dw: 48, dh: 144 },
-    "Right Sleeve": { x: 44, y: 36, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
-    "Left Pant": { x: 4, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
-    "Right Pant": { x: 4, y: 36, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -61,7 +61,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
           }
         });
       });
-  }, [skins, selectedParts, bodyParts]);
+  }, [skins, selectedParts]);
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-md">

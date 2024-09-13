@@ -15,6 +15,9 @@ jobs:
           name: Install project dependencies
           command: npm run install-all
       - run:
+          name: Run ESLint
+          command: npx eslint . --config .eslintrc.json || true
+      - run:
           name: Build client
           command: npm run build
       - persist_to_workspace:
