@@ -57,8 +57,8 @@ jobs:
       - run:
           name: Deploy to server
           command: |
+            echo "Local DEPLOY_PATH: $DEPLOY_PATH"
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '
-              echo $DEPLOY_PATH &&
               mkdir -p $DEPLOY_PATH &&
               rm -rf $DEPLOY_PATH/* &&
               exit
