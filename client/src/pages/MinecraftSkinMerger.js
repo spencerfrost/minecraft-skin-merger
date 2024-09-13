@@ -9,18 +9,8 @@ const API_URL =
   process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3002/api";
 
 const skinParts = [
-  "Head",
-  "Hat",
-  "Body",
-  "Jacket",
-  "Left Arm",
-  "Left Sleeve",
-  "Right Arm",
-  "Right Sleeve",
-  "Left Leg",
-  "Left Pant",
-  "Right Leg",
-  "Right Pant",
+  "Head", "Hat", "Body", "Jacket", "Left Arm", "Left Sleeve", "Right Arm",
+  "Right Sleeve", "Left Leg", "Left Pant", "Right Leg", "Right Pant"
 ];
 
 const MinecraftSkinMergerPage = () => {
