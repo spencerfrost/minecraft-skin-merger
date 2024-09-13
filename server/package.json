@@ -2,7 +2,7 @@
   "name": "minecraft-skin-merger-server",
   "version": "1.0.0",
   "description": "Backend server for Minecraft Skin Merger",
-  "main": "server.js",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
     "start": "node dist/server.js",

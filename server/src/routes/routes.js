@@ -3,9 +3,9 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import config from "./config.js";
-import fetchSkin from "./fetchSkin.js";
-import mergeSkins from "./mergeSkins.js";
+import config from "../config/config.js";
+import fetchSkin from "../controllers/fetchSkin.js";
+import mergeSkins from "../controllers/mergeSkins.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);

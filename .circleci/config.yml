@@ -88,23 +88,18 @@ jobs:
             source "$BASH_ENV"
             
             # Deploy client build files
-            echo "Deploying client build files..."
             scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
             
             # Debug: Verify client deployment
-            echo "Verifying client files on the server..."
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
             
             # Deploy server files and package.json
-            echo "Deploying server files and package.json..."
             scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/dist/* /home/circleci/project/server/package*.json $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             
             # Debug: Verify server deployment 
-            echo "Verifying server files on the server..."
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
             
             # Connect via SSH, install production dependencies, restart PM2 and Nginx
-            echo "Installing dependencies and restarting services..."
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
               cd /var/www/minecraft-skin-merger/server
               echo "Installing npm production dependencies..."

@@ -4,13 +4,10 @@
   "description": "A web application for merging Minecraft skins",
   "main": "server/server.js",
   "scripts": {
-    "start": "NODE_ENV=production node server/server.js",
-    "server": "nodemon server/server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "concurrently \"npm run start --prefix client\" \"npm run dev --prefix server\"",
     "install-all": "npm install && npm install --prefix client && npm install --prefix server",
     "ci-all": "npm ci && npm ci --prefix client && npm ci --prefix server",
-    "build": "npm run build --prefix client"
+    "build-all": "npm run build --prefix client && npm run build --prefix server"
   },
   "keywords": [
     "minecraft",

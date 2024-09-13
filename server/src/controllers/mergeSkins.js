@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 
-import config from "./config.js";
+import config from "../config/config.js";
 
 const regions = {
   Head: { left: 0, top: 0, width: 32, height: 16 },
