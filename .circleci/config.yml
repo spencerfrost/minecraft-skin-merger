@@ -43,12 +43,17 @@ jobs:
           at: .
       - run:
           name: Build client
-          command: npm run build
+          command: npm run build --prefix client
+      - run:
+          name: Build server
+          command: npm run build --prefix server
       - persist_to_workspace:
           root: .
           paths:
             - client/build
-            - server
+            - server/dist
+            - server/package.json
+            - server/package-lock.json
 
   deploy:
     docker:
@@ -82,39 +87,6 @@ jobs:
             # Source the Bash environment
             source "$BASH_ENV"
             
-            # Debug: Check environment variables
-            echo "SSH_USER: $SSH_USER"
-            echo "SSH_HOST: $SSH_HOST"
-            echo "Checking SSH connection..."
-            
-            # Debug: Test SSH connection with StrictHostKeyChecking disabled
-            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo 'SSH connection successful' || echo 'SSH connection failed'"
-            
-            # Debug: Check directory existence and permissions
-            echo "Checking server directory structure..."
-            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
-              bash -c '
-                echo "Checking /var/www/minecraft-skin-merger directory..."
-                ls -ld /var/www/minecraft-skin-merger || echo "Directory /var/www/minecraft-skin-merger does not exist"
-                echo "Checking permissions of /var/www/minecraft-skin-merger..."
-                ls -ld /var/www/minecraft-skin-merger/client || echo "Directory /var/www/minecraft-skin-merger/client does not exist"
-                ls -ld /var/www/minecraft-skin-merger/server || echo "Directory /var/www/minecraft-skin-merger/server does not exist"
-              '
-            EOF
-            
-            # Debug: Output ecosystem config
-            echo "Checking ecosystem.config.js file..."
-            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
-              bash -c '
-                if [ -f /var/www/minecraft-skin-merger/ecosystem.config.js ]; then
-                  echo "ecosystem.config.js found, displaying content:"
-                  cat /var/www/minecraft-skin-merger/ecosystem.config.js
-                else
-                  echo "ecosystem.config.js not found"
-                fi
-              '
-            EOF
-            
             # Deploy client build files
             echo "Deploying client build files..."
             scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
@@ -125,9 +97,9 @@ jobs:
             
             # Deploy server files and package.json
             echo "Deploying server files and package.json..."
-            scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/dist/* /home/circleci/project/server/package*.json $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             
-            # Debug: Verify server deployment
+            # Debug: Verify server deployment 
             echo "Verifying server files on the server..."
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
             

@@ -5,6 +5,7 @@
 
 # Production
 /client/build
+/server/dist
 
 # Misc
 .DS_Store
@@ -23,5 +24,6 @@ yarn-error.log*
 /public
 /server/uploads
 /server/public
+
 generate_tree.py
 .vscode/settings.json
