@@ -53,7 +53,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - attach_workspace:
-          at: .
+          at: /home/circleci/project
       - add_ssh_keys:
           fingerprints:
             - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
