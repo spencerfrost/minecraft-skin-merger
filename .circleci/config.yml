@@ -1,41 +1,58 @@
-# This config was automatically generated from your source code
-# Stacks detected: deps:node:.
 version: 2.1
+
 orbs:
-  node: circleci/node@5
+  node: circleci/node@6.1.0
+
 jobs:
-  build-node:
-    # Build node project
-    executor: node/default
+  build:
+    docker:
+      - image: cimg/node:18.0.0
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
       - run:
+          name: Install project dependencies
+          command: npm run install-all
+      - run:
+          name: Build client
           command: npm run build
-      - run:
-          name: Create the ~/artifacts directory if it doesn't exist
-          command: mkdir -p ~/artifacts
-      # Copy output to artifacts dir
-      - run:
-          name: Copy artifacts
-          command: cp -R build dist public .output .next .docusaurus ~/artifacts 2>/dev/null || true
-      - store_artifacts:
-          path: ~/artifacts
-          destination: node-build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
   deploy:
-    # This is an example deploy job, not actually used by the workflow
     docker:
       - image: cimg/base:stable
     steps:
-      # Replace this with steps to deploy to users
+      - attach_workspace:
+          at: .
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI" # Replace with your SSH key fingerprint from CircleCI
       - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+          name: Deploy to server
+          command: |
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '
+              mkdir -p $DEPLOY_PATH &&
+              rm -rf $DEPLOY_PATH/* &&
+              exit
+            '
+            scp -r ./* $SSH_USER@$SSH_HOST:$DEPLOY_PATH
+            ssh $SSH_USER@$SSH_HOST '
+              cd $DEPLOY_PATH &&
+              npm install --production &&
+              pm2 restart minecraft-skin-merger
+            '
+
 workflows:
-  build:
+  build-and-deploy:
     jobs:
-      - build-node
-    # - deploy:
-    #     requires:
-    #       - build-node
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

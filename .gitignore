@@ -24,3 +24,4 @@ yarn-error.log*
 /server/uploads
 /server/public
 generate_tree.py
+.vscode/settings.json
