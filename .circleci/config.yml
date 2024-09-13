@@ -83,6 +83,12 @@ jobs:
           command: |
             # Source the Bash environment
             source "$BASH_ENV"
+            # Debug 
+            ssh -v $SSH_USER@$SSH_HOST \<< EOF
+              cd /var/www/minecraft-skin-merger
+              ls -la
+              cat /var/www/minecraft-skin-merger/ecosystem.config.js
+            EOF
             # Deploy client build files
             scp -vr /home/circleci/project/client/build/* 
                     $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
