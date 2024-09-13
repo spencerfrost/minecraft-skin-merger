@@ -95,22 +95,26 @@ jobs:
             # Debug: Check directory existence and permissions
             echo "Checking server directory structure..."
             ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
-              echo "Checking /var/www/minecraft-skin-merger directory..."
-              ls -ld /var/www/minecraft-skin-merger || echo "Directory /var/www/minecraft-skin-merger does not exist"
-              echo "Checking permissions of /var/www/minecraft-skin-merger..."
-              ls -ld /var/www/minecraft-skin-merger/client || echo "Directory /var/www/minecraft-skin-merger/client does not exist"
-              ls -ld /var/www/minecraft-skin-merger/server || echo "Directory /var/www/minecraft-skin-merger/server does not exist"
+              bash -c '
+                echo "Checking /var/www/minecraft-skin-merger directory..."
+                ls -ld /var/www/minecraft-skin-merger || echo "Directory /var/www/minecraft-skin-merger does not exist"
+                echo "Checking permissions of /var/www/minecraft-skin-merger..."
+                ls -ld /var/www/minecraft-skin-merger/client || echo "Directory /var/www/minecraft-skin-merger/client does not exist"
+                ls -ld /var/www/minecraft-skin-merger/server || echo "Directory /var/www/minecraft-skin-merger/server does not exist"
+              '
             EOF
             
             # Debug: Output ecosystem config
             echo "Checking ecosystem.config.js file..."
             ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
-              if [ -f /var/www/minecraft-skin-merger/ecosystem.config.js ]; then
-                echo "ecosystem.config.js found, displaying content:"
-                cat /var/www/minecraft-skin-merger/ecosystem.config.js
-              else
-                echo "ecosystem.config.js not found"
-              fi
+              bash -c '
+                if [ -f /var/www/minecraft-skin-merger/ecosystem.config.js ]; then
+                  echo "ecosystem.config.js found, displaying content:"
+                  cat /var/www/minecraft-skin-merger/ecosystem.config.js
+                else
+                  echo "ecosystem.config.js not found"
+                fi
+              '
             EOF
             
             # Deploy client build files
