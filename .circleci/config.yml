@@ -8,16 +8,20 @@ jobs:
       - image: cimg/node:18.0.0
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - restore_cache:
+          keys:
+            - npm-packages-{{ checksum "package-lock.json" }}-{{ checksum "client/package-lock.json" }}-{{ checksum "server/package-lock.json" }}
       - run:
           name: Install project dependencies
-          command: npm run install-all
+          command: npm run ci-all
+      - save_cache:
+          paths:
+            - ~/.npm
+          key: npm-packages-{{ checksum "package-lock.json" }}-{{ checksum "client/package-lock.json" }}-{{ checksum "server/package-lock.json" }}
       - persist_to_workspace:
           root: .
           paths:
             - .
-
   test:
     docker:
       - image: cimg/node:18.0.0
