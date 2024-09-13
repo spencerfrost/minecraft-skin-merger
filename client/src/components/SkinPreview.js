@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import { useEffect, useRef } from 'react';
+import PropTypes from "prop-types";
+import { useEffect, useRef } from "react";
 
 const bodyParts = {
   Head: { x: 8, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
@@ -10,7 +10,7 @@ const bodyParts = {
   "Right Arm": { x: 44, y: 20, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
   "Left Leg": { x: 20, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
   "Right Leg": { x: 4, y: 20, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
-  "Left Sleeve": { x: 52, y: 52, w: 4, h: 12, dx: 144, dy: 96, dw: 48, dh: 144 },
+  "Left Sleeve": { x: 52,y: 52,w: 4,h: 12,dx: 144,dy: 96,dw: 48,dh: 144 },
   "Right Sleeve": { x: 44, y: 36, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
   "Left Pant": { x: 4, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
   "Right Pant": { x: 4, y: 36, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
@@ -21,7 +21,10 @@ const SkinPreview = ({ skins, selectedParts }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     // Disable image smoothing for crisp pixels
     ctx.imageSmoothingEnabled = false;
@@ -30,7 +33,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Load all skin images
-    const skinImages = skins.map(skinUrl => {
+    const skinImages = skins.map((skinUrl) => {
       if (!skinUrl) return null;
       const img = new Image();
       img.crossOrigin = "Anonymous";
@@ -39,28 +42,31 @@ const SkinPreview = ({ skins, selectedParts }) => {
     });
 
     // Wait for all images to load
-    Promise.all(skinImages.map(img => img ? new Promise(resolve => img.onload = resolve) : null))
-      .then(() => {
-        // Draw selected parts
-        Object.entries(selectedParts).forEach(([part, skinIndex]) => {
-          if (skinIndex !== null && skinImages[skinIndex]) {
-            const { x, y, w, h, dx, dy, dw, dh } = bodyParts[part];
-            
-            // Create a temporary canvas for pixel-perfect scaling
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = w;
-            tempCanvas.height = h;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.imageSmoothingEnabled = false;
+    Promise.all(
+      skinImages.map((img) =>
+        img ? new Promise((resolve) => (img.onload = resolve)) : null
+      )
+    ).then(() => {
+      // Draw selected parts
+      Object.entries(selectedParts).forEach(([part, skinIndex]) => {
+        if (skinIndex !== null && skinImages[skinIndex]) {
+          const { x, y, w, h, dx, dy, dw, dh } = bodyParts[part];
 
-            // Draw the part on the temporary canvas
-            tempCtx.drawImage(skinImages[skinIndex], x, y, w, h, 0, 0, w, h);
+          // Create a temporary canvas for pixel-perfect scaling
+          const tempCanvas = document.createElement("canvas");
+          tempCanvas.width = w;
+          tempCanvas.height = h;
+          const tempCtx = tempCanvas.getContext("2d");
+          tempCtx.imageSmoothingEnabled = false;
 
-            // Scale up the temporary canvas to the main canvas
-            ctx.drawImage(tempCanvas, 0, 0, w, h, dx, dy, dw, dh);
-          }
-        });
+          // Draw the part on the temporary canvas
+          tempCtx.drawImage(skinImages[skinIndex], x, y, w, h, 0, 0, w, h);
+
+          // Scale up the temporary canvas to the main canvas
+          ctx.drawImage(tempCanvas, 0, 0, w, h, dx, dy, dw, dh);
+        }
       });
+    });
   }, [skins, selectedParts]);
 
   return (
@@ -70,7 +76,8 @@ const SkinPreview = ({ skins, selectedParts }) => {
         width={192}
         height={384}
         className="border border-gray-300 pixelated"
-        style={{ imageRendering: 'pixelated' }}
+        style={{ imageRendering: "pixelated" }}
+        data-testid="skin-preview-canvas"
       />
     </div>
   );
@@ -78,7 +85,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
 
 SkinPreview.propTypes = {
   skins: PropTypes.arrayOf(PropTypes.string),
-  selectedParts: PropTypes.object
+  selectedParts: PropTypes.object,
 };
 
 export default SkinPreview;
