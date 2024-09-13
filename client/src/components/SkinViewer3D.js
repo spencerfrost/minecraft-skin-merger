@@ -27,7 +27,7 @@ const SkinViewer3D = ({ skinUrl }) => {
       skinViewer.current.camera.lookAt(0, 0, 0);
 
       // Enable auto rotate
-      skinViewer.current.autoRotate = true;
+      skinViewer.current.autoRotate = false;
 
       // Zoom out
       skinViewer.current.zoom = 0.9;
