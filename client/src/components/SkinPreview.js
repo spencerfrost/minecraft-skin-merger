@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 
 const SkinPreview = ({ skins, selectedParts }) => {
@@ -60,7 +61,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
           }
         });
       });
-  }, [skins, selectedParts]);
+  }, [skins, selectedParts, bodyParts]);
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-md">
@@ -73,6 +74,11 @@ const SkinPreview = ({ skins, selectedParts }) => {
       />
     </div>
   );
+};
+
+SkinPreview.propTypes = {
+  skins: PropTypes.arrayOf(PropTypes.string),
+  selectedParts: PropTypes.object
 };
 
 export default SkinPreview;

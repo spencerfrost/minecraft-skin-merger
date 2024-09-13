@@ -1,43 +1,53 @@
-import { useEffect, useRef, useState } from 'react';
+import PropTypes from "prop-types";
+import { useEffect, useRef, useState } from "react";
 
-const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelection }) => {
+const bodyParts = {
+  Head: { x: 16, y: 0, w: 32, h: 32 },
+  Body: { x: 16, y: 32, w: 32, h: 48 },
+  Hat: { x: 16, y: 0, w: 32, h: 32 },
+  Jacket: { x: 16, y: 32, w: 32, h: 48 },
+  "Left Arm": { x: 48, y: 32, w: 16, h: 48 },
+  "Right Arm": { x: 0, y: 32, w: 16, h: 48 },
+  "Left Leg": { x: 32, y: 80, w: 16, h: 48 },
+  "Right Leg": { x: 16, y: 80, w: 16, h: 48 },
+  "Left Sleeve": { x: 48, y: 32, w: 16, h: 48 },
+  "Right Sleeve": { x: 0, y: 32, w: 16, h: 48 },
+  "Left Pant": { x: 32, y: 80, w: 16, h: 48 },
+  "Right Pant": { x: 16, y: 80, w: 16, h: 48 },
+};
+
+const isOverlayPart = (part) =>
+  [
+    "Hat",
+    "Jacket",
+    "Left Sleeve",
+    "Right Sleeve",
+    "Left Pant",
+    "Right Pant",
+  ].includes(part);
+
+const MinecraftSkinRenderer = ({
+  skinUrl,
+  skinIndex,
+  selectedParts,
+  onPartSelection,
+}) => {
   const canvasRef = useRef(null);
   const [hoveredPart, setHoveredPart] = useState(null);
 
-  const bodyParts = {
-    Head: { x: 16, y: 0, w: 32, h: 32 },
-    Body: { x: 16, y: 32, w: 32, h: 48 },
-    Hat: { x: 16, y: 0, w: 32, h: 32 },
-    Jacket: { x: 16, y: 32, w: 32, h: 48 },
-    "Left Arm": { x: 48, y: 32, w: 16, h: 48 },
-    "Right Arm": { x: 0, y: 32, w: 16, h: 48 },
-    "Left Leg": { x: 32, y: 80, w: 16, h: 48 },
-    "Right Leg": { x: 16, y: 80, w: 16, h: 48 },
-    "Left Sleeve": { x: 48, y: 32, w: 16, h: 48 },
-    "Right Sleeve": { x: 0, y: 32, w: 16, h: 48 },
-    "Left Pant": { x: 32, y: 80, w: 16, h: 48 },
-    "Right Pant": { x: 16, y: 80, w: 16, h: 48 },
-  };
-
-  const isOverlayPart = (part) => ['Hat', 'Jacket', 'Left Sleeve', 'Right Sleeve', 'Left Pant', 'Right Pant'].includes(part);
-
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const img = new Image();
     img.crossOrigin = "Anonymous";
     img.src = skinUrl;
 
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Draw main body
+
       drawMainBody(ctx, img, 32, 0);
-      
-      // Draw overlay
       drawOverlay(ctx, img, 160, 0);
 
-      // Draw selection glow for all selected parts
       Object.entries(bodyParts).forEach(([part, coords]) => {
         if (selectedParts[part] === skinIndex) {
           const offsetX = isOverlayPart(part) ? 160 : 32;
@@ -45,7 +55,6 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
         }
       });
 
-      // Draw hover effect
       if (hoveredPart) {
         const offsetX = isOverlayPart(hoveredPart) ? 160 : 32;
         drawHoverEffect(ctx, bodyParts[hoveredPart], offsetX);
@@ -73,9 +82,9 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
 
   const drawSelectionGlow = (ctx, part, offsetX) => {
     ctx.save();
-    ctx.strokeStyle = 'orange';
+    ctx.strokeStyle = "orange";
     ctx.lineWidth = 2;
-    ctx.shadowColor = 'orange';
+    ctx.shadowColor = "orange";
     ctx.shadowBlur = 10;
     ctx.strokeRect(offsetX + part.x, part.y, part.w, part.h);
     ctx.restore();
@@ -83,7 +92,7 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
 
   const drawHoverEffect = (ctx, part, offsetX) => {
     ctx.save();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
     ctx.fillRect(offsetX + part.x, part.y, part.w, part.h);
     ctx.restore();
   };
@@ -92,12 +101,17 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
     const rect = canvasRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-   
+
     let clickedPart = null;
 
     for (const [part, coords] of Object.entries(bodyParts)) {
       const offsetX = isOverlayPart(part) ? 160 : 32;
-      if (x >= coords.x + offsetX && x < coords.x + coords.w + offsetX && y >= coords.y && y < coords.y + coords.h) {
+      if (
+        x >= coords.x + offsetX &&
+        x < coords.x + coords.w + offsetX &&
+        y >= coords.y &&
+        y < coords.y + coords.h
+      ) {
         clickedPart = part;
         break;
       }
@@ -112,12 +126,17 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
     const rect = canvasRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-   
+
     let newHoveredPart = null;
 
     for (const [part, coords] of Object.entries(bodyParts)) {
       const offsetX = isOverlayPart(part) ? 160 : 32;
-      if (x >= coords.x + offsetX && x < coords.x + coords.w + offsetX && y >= coords.y && y < coords.y + coords.h) {
+      if (
+        x >= coords.x + offsetX &&
+        x < coords.x + coords.w + offsetX &&
+        y >= coords.y &&
+        y < coords.y + coords.h
+      ) {
         newHoveredPart = part;
         break;
       }
@@ -137,6 +156,13 @@ const MinecraftSkinRenderer = ({ skinUrl, skinIndex, selectedParts, onPartSelect
       onMouseLeave={() => setHoveredPart(null)}
     />
   );
+};
+
+MinecraftSkinRenderer.propTypes = {
+  skinUrl: PropTypes.string.isRequired,
+  skinIndex: PropTypes.number.isRequired,
+  selectedParts: PropTypes.object.isRequired,
+  onPartSelection: PropTypes.func.isRequired,
 };
 
 export default MinecraftSkinRenderer;
