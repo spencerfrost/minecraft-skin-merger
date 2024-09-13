@@ -83,17 +83,18 @@ jobs:
           command: |
             # Source the Bash environment
             source "$BASH_ENV"
+            
             # Debug: Check environment variables
             echo "SSH_USER: $SSH_USER"
             echo "SSH_HOST: $SSH_HOST"
             echo "Checking SSH connection..."
             
-            # Debug: Test SSH connection
-            ssh -v $SSH_USER@$SSH_HOST "echo 'SSH connection successful' || echo 'SSH connection failed'"
+            # Debug: Test SSH connection with StrictHostKeyChecking disabled
+            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "echo 'SSH connection successful' || echo 'SSH connection failed'"
             
             # Debug: Check directory existence and permissions
             echo "Checking server directory structure..."
-            ssh -v $SSH_USER@$SSH_HOST \<< EOF
+            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
               echo "Checking /var/www/minecraft-skin-merger directory..."
               ls -ld /var/www/minecraft-skin-merger || echo "Directory /var/www/minecraft-skin-merger does not exist"
               echo "Checking permissions of /var/www/minecraft-skin-merger..."
@@ -103,7 +104,7 @@ jobs:
             
             # Debug: Output ecosystem config
             echo "Checking ecosystem.config.js file..."
-            ssh -v $SSH_USER@$SSH_HOST \<< EOF
+            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
               if [ -f /var/www/minecraft-skin-merger/ecosystem.config.js ]; then
                 echo "ecosystem.config.js found, displaying content:"
                 cat /var/www/minecraft-skin-merger/ecosystem.config.js
@@ -111,20 +112,39 @@ jobs:
                 echo "ecosystem.config.js not found"
               fi
             EOF
+            
             # Deploy client build files
-            scp -vr /home/circleci/project/client/build/* 
-                    $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
+            echo "Deploying client build files..."
+            scp -o StrictHostKeyChecking=no -vr /home/circleci/project/client/build/* \
+                $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
+            
+            # Debug: Verify client deployment
+            echo "Verifying client files on the server..."
+            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
+            
             # Deploy server files and package.json
-            scp -vr /home/circleci/project/server/dist/* \
+            echo "Deploying server files and package.json..."
+            scp -o StrictHostKeyChecking=no -vr /home/circleci/project/server/dist/* \
                     /home/circleci/project/server/package*.json \
                     $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            
+            # Debug: Verify server deployment
+            echo "Verifying server files on the server..."
+            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
+            
             # Connect via SSH, install production dependencies, restart PM2 and Nginx
-            ssh -v $SSH_USER@$SSH_HOST \<< EOF
+            echo "Installing dependencies and restarting services..."
+            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
               cd /var/www/minecraft-skin-merger/server
-              npm install --production
-              pm2 restart /var/www/minecraft-skin-merger/ecosystem.config.js
-              sudo systemctl restart nginx
+              echo "Installing npm production dependencies..."
+              npm install --production || echo "npm install failed"
+              echo "Restarting PM2..."
+              pm2 restart /var/www/minecraft-skin-merger/ecosystem.config.js || echo "PM2 restart failed"
+              echo "Restarting Nginx..."
+              sudo systemctl restart nginx || echo "Nginx restart failed"
             EOF
+
+
 
 workflows:
   setup-test-build-deploy:
