@@ -61,13 +61,14 @@ jobs:
           name: Deploy to Server
           command: |
             # Deploy client build files
-            scp -vr /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
+            scp -vr /home/circleci/project/client/build/* 
+                    $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
             # Deploy server files and package.json
             scp -vr /home/circleci/project/server/dist/* \
                     /home/circleci/project/server/package*.json \
                     $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             # Connect via SSH, install production dependencies, restart PM2 and Nginx
-            ssh -v $SSH_USER@$SSH_HOST << EOF
+            ssh -v $SSH_USER@$SSH_HOST \<< EOF
               cd /var/www/minecraft-skin-merger/server
               npm install --production
               pm2 restart /var/www/minecraft-skin-merger/ecosystem.config.js
