@@ -24,8 +24,9 @@ const SkinViewer3D = ({ skinUrl }) => {
       skinViewer.current.animation.speed = 0.6;
 
       // Set initial camera position
-      skinViewer.current.camera.position.set(30, 0, 0);
+      skinViewer.current.camera.position.set(0, 0, 60);
       skinViewer.current.camera.lookAt(0, 0, 0);
+
       // Enable auto rotate
       skinViewer.current.autoRotate = false;
 

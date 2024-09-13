@@ -1,20 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
-
-const bodyParts = {
-  Head: { x: 8, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
-  Body: { x: 20, y: 20, w: 8, h: 12, dx: 48, dy: 96, dw: 96, dh: 144 },
-  Hat: { x: 40, y: 8, w: 8, h: 8, dx: 48, dy: 0, dw: 96, dh: 96 },
-  Jacket: { x: 20, y: 36, w: 8, h: 12, dx: 48, dy: 96, dw: 96, dh: 144 },
-  "Left Arm": { x: 36, y: 52, w: 4, h: 12, dx: 144, dy: 96, dw: 48, dh: 144 },
-  "Right Arm": { x: 44, y: 20, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
-  "Left Leg": { x: 20, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
-  "Right Leg": { x: 4, y: 20, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
-  "Left Sleeve": { x: 52,y: 52,w: 4,h: 12,dx: 144,dy: 96,dw: 48,dh: 144 },
-  "Right Sleeve": { x: 44, y: 36, w: 4, h: 12, dx: 0, dy: 96, dw: 48, dh: 144 },
-  "Left Pant": { x: 4, y: 52, w: 4, h: 12, dx: 96, dy: 240, dw: 48, dh: 144 },
-  "Right Pant": { x: 4, y: 36, w: 4, h: 12, dx: 48, dy: 240, dw: 48, dh: 144 },
-};
+import { skinRegions } from "../constants/skinParts";
 
 const SkinPreview = ({ skins, selectedParts }) => {
   const canvasRef = useRef(null);
@@ -50,7 +36,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
       // Draw selected parts
       Object.entries(selectedParts).forEach(([part, skinIndex]) => {
         if (skinIndex !== null && skinImages[skinIndex]) {
-          const { x, y, w, h, dx, dy, dw, dh } = bodyParts[part];
+          const { x, y, w, h, dx, dy, dw, dh } = skinRegions[part];
 
           // Create a temporary canvas for pixel-perfect scaling
           const tempCanvas = document.createElement("canvas");

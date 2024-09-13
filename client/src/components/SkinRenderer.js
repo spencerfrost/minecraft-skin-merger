@@ -1,20 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
-
-const bodyParts = {
-  Head: { x: 16, y: 0, w: 32, h: 32 },
-  Body: { x: 16, y: 32, w: 32, h: 48 },
-  Hat: { x: 16, y: 0, w: 32, h: 32 },
-  Jacket: { x: 16, y: 32, w: 32, h: 48 },
-  "Left Arm": { x: 48, y: 32, w: 16, h: 48 },
-  "Right Arm": { x: 0, y: 32, w: 16, h: 48 },
-  "Left Leg": { x: 32, y: 80, w: 16, h: 48 },
-  "Right Leg": { x: 16, y: 80, w: 16, h: 48 },
-  "Left Sleeve": { x: 48, y: 32, w: 16, h: 48 },
-  "Right Sleeve": { x: 0, y: 32, w: 16, h: 48 },
-  "Left Pant": { x: 32, y: 80, w: 16, h: 48 },
-  "Right Pant": { x: 16, y: 80, w: 16, h: 48 },
-};
+import { skinCoords } from "../constants/skinParts";
 
 const isOverlayPart = (part) =>
   [
@@ -48,7 +34,7 @@ const MinecraftSkinRenderer = ({
       drawMainBody(ctx, img, 32, 0);
       drawOverlay(ctx, img, 160, 0);
 
-      Object.entries(bodyParts).forEach(([part, coords]) => {
+      Object.entries(skinCoords).forEach(([part, coords]) => {
         if (selectedParts[part] === skinIndex) {
           const offsetX = isOverlayPart(part) ? 160 : 32;
           drawSelectionGlow(ctx, coords, offsetX);
@@ -57,7 +43,7 @@ const MinecraftSkinRenderer = ({
 
       if (hoveredPart) {
         const offsetX = isOverlayPart(hoveredPart) ? 160 : 32;
-        drawHoverEffect(ctx, bodyParts[hoveredPart], offsetX);
+        drawHoverEffect(ctx, skinCoords[hoveredPart], offsetX);
       }
     };
   }, [skinUrl, selectedParts, hoveredPart, skinIndex]);
@@ -104,7 +90,7 @@ const MinecraftSkinRenderer = ({
 
     let clickedPart = null;
 
-    for (const [part, coords] of Object.entries(bodyParts)) {
+    for (const [part, coords] of Object.entries(skinCoords)) {
       const offsetX = isOverlayPart(part) ? 160 : 32;
       if (
         x >= coords.x + offsetX &&
@@ -129,7 +115,7 @@ const MinecraftSkinRenderer = ({
 
     let newHoveredPart = null;
 
-    for (const [part, coords] of Object.entries(bodyParts)) {
+    for (const [part, coords] of Object.entries(skinCoords)) {
       const offsetX = isOverlayPart(part) ? 160 : 32;
       if (
         x >= coords.x + offsetX &&

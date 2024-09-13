@@ -4,14 +4,10 @@ import SkinPreview from "../components/SkinPreview";
 import SkinUploader from "../components/SkinUploader";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
+import { skinParts } from "../constants/skinParts";
 
 const API_URL =
   process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3002/api";
-
-const skinParts = [
-  "Head", "Hat", "Body", "Jacket", "Left Arm", "Left Sleeve", "Right Arm",
-  "Right Sleeve", "Left Leg", "Left Pant", "Right Leg", "Right Pant"
-];
 
 const MinecraftSkinMergerPage = () => {
   const [skins, setSkins] = useState([null, null, null, null]);
