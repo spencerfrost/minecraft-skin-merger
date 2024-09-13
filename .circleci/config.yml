@@ -62,8 +62,15 @@ jobs:
           fingerprints:
             - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
       - run:
+          name: Setup Environment Variables
+          command: |
+            echo 'export SSH_USER=${SSH_USER}' >> "$BASH_ENV"
+            echo 'export SSH_HOST=${SSH_HOST}' >> "$BASH_ENV"
+      - run:
           name: Deploy to Server
           command: |
+            # Source the Bash environment
+            source "$BASH_ENV"
             # Deploy client build files
             scp -vr /home/circleci/project/client/build/* 
                     $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
