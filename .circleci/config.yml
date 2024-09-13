@@ -1,10 +1,9 @@
 version: 2.1
-
 orbs:
   node: circleci/node@6.1.0
 
 jobs:
-  build:
+  setup:
     docker:
       - image: cimg/node:18.0.0
     steps:
@@ -14,9 +13,30 @@ jobs:
       - run:
           name: Install project dependencies
           command: npm run install-all
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  test:
+    docker:
+      - image: cimg/node:18.0.0
+    steps:
+      - attach_workspace:
+          at: .
       - run:
           name: Run ESLint
           command: npx eslint . --config .eslintrc.json || true
+      - run:
+          name: Run tests
+          command: npm test
+
+  build:
+    docker:
+      - image: cimg/node:18.0.0
+    steps:
+      - attach_workspace:
+          at: .
       - run:
           name: Build client
           command: npm run build
@@ -33,7 +53,7 @@ jobs:
           at: .
       - add_ssh_keys:
           fingerprints:
-            - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI" # Replace with your SSH key fingerprint from CircleCI
+            - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
       - run:
           name: Deploy to server
           command: |
@@ -50,9 +70,16 @@ jobs:
             '
 
 workflows:
-  build-and-deploy:
+  version: 2
+  setup-test-build-deploy:
     jobs:
-      - build
+      - setup
+      - test:
+          requires:
+            - setup
+      - build:
+          requires:
+            - test
       - deploy:
           requires:
             - build
