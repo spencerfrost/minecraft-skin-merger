@@ -43,7 +43,10 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - client/build
+            - server/dist
+            - server/package.json
+            - server/package-lock.json
 
   deploy:
     docker:
@@ -55,20 +58,21 @@ jobs:
           fingerprints:
             - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
       - run:
-          name: Deploy to server
+          name: Deploy to Server
           command: |
-            echo "Local DEPLOY_PATH: $DEPLOY_PATH"
-            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '
-              mkdir -p $DEPLOY_PATH &&
-              rm -rf $DEPLOY_PATH/* &&
-              exit
-            '
-            scp -r ./* $SSH_USER@$SSH_HOST:$DEPLOY_PATH
-            ssh $SSH_USER@$SSH_HOST '
-              cd $DEPLOY_PATH &&
-              npm install --production &&
-              pm2 restart minecraft-skin-merger
-            '
+            # Deploy client build files
+            scp -vr /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
+            # Deploy server files and package.json
+            scp -vr /home/circleci/project/server/dist/* \
+                    /home/circleci/project/server/package*.json \
+                    $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            # Connect via SSH, install production dependencies, restart PM2 and Nginx
+            ssh -v $SSH_USER@$SSH_HOST << EOF
+              cd /var/www/minecraft-skin-merger/server
+              npm install --production
+              pm2 restart /var/www/minecraft-skin-merger/ecosystem.config.js
+              sudo systemctl restart nginx
+            EOF
 
 workflows:
   setup-test-build-deploy:
