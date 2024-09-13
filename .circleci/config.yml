@@ -70,7 +70,6 @@ jobs:
             '
 
 workflows:
-  version: 2
   setup-test-build-deploy:
     jobs:
       - setup
