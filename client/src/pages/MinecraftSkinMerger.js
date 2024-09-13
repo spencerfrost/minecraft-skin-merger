@@ -8,10 +8,20 @@ import { Button } from "../components/ui/button";
 const API_URL =
   process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3002/api";
 
-  const skinParts = [
-    "Head", "Hat", "Body", "Jacket", "Left Arm", "Left Sleeve", "Right Arm", "Right Sleeve",
-    "Left Leg", "Left Pant", "Right Leg", "Right Pant"
-  ];
+const skinParts = [
+  "Head",
+  "Hat",
+  "Body",
+  "Jacket",
+  "Left Arm",
+  "Left Sleeve",
+  "Right Arm",
+  "Right Sleeve",
+  "Left Leg",
+  "Left Pant",
+  "Right Leg",
+  "Right Pant",
+];
 
 const MinecraftSkinMergerPage = () => {
   const [skins, setSkins] = useState([null, null, null, null]);
@@ -78,71 +88,83 @@ const MinecraftSkinMergerPage = () => {
   const mergeSkins = async () => {
     setError(null);
     const formData = new FormData();
-  
+
     skins.forEach((skin, index) => {
       if (skin) {
         try {
-          const base64Data = skin.split(',')[1];
+          const base64Data = skin.split(",")[1];
           const byteCharacters = atob(base64Data);
           const byteNumbers = new Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
             byteNumbers[i] = byteCharacters.charCodeAt(i);
           }
           const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'image/png' });
-          formData.append('skins', blob, `skin${index}.png`);
+          const blob = new Blob([byteArray], { type: "image/png" });
+          formData.append("skins", blob, `skin${index}.png`);
         } catch (error) {
           console.error(`Error processing skin at index ${index}:`, error);
         }
       }
     });
-  
-    formData.append('selectedParts', JSON.stringify(selectedParts));
-  
+
+    formData.append("selectedParts", JSON.stringify(selectedParts));
+
     try {
       const response = await fetch(`${API_URL}/merge-skins`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       if (data.mergedSkinUrl) {
         setMergedSkin(data.mergedSkinUrl);
+        console.log("Merged skin set:", data.mergedSkinUrl);
       } else {
-        setError('Unexpected response format');
+        setError("Unexpected response format");
       }
     } catch (error) {
       setError(`Error merging skins: ${error.message}`);
-      console.error('Error during skin merge:', error);
+      console.error("Error during skin merge:", error);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-2 text-center">Minecraft Skin Merger</h1>
+    <div className="container mx-auto p-4" data-testid="minecraft-skin-merger">
+      <h1
+        className="text-3xl font-bold mb-2 text-center"
+        data-testid="merger-title"
+      >
+        Minecraft Skin Merger
+      </h1>
       {/* By Spencer Frost */}
-      <h5 className="text-xl font-bold mb-2 text-center">By Spencer Frost</h5>
+      <h5
+        className="text-xl font-bold mb-2 text-center"
+        data-testid="merger-subtitle"
+      >
+        By Spencer Frost
+      </h5>
       <p className="text-center mb-8">
-        Upload up to 4 skins, select the body parts, and then merge them together to create a new skin.
+        Upload up to 4 skins, select the body parts, and then merge them
+        together to create a new skin.
       </p>
-
 
       <div className="flex flex-col lg:flex-row gap-4 mb-8">
         <div className="lg:w-1/4">
           <div className="grid grid-cols-1 gap-4">
             {skins.slice(0, 2).map((skin, index) => (
               <SkinUploader
-                key={`skinUploader-${skin ? skin.name : index}`}
+                key={`skinUploader-${index}`}
                 index={index}
                 skin={skin}
                 onUpload={handleSkinUpload}
                 onDelete={handleSkinDelete}
                 selectedParts={selectedParts}
                 onPartSelection={handlePartSelection}
+                data-testid={`skin-uploader-${index}`}
               />
             ))}
           </div>
@@ -150,7 +172,11 @@ const MinecraftSkinMergerPage = () => {
 
         <div className="lg:w-1/2">
           <div className="flex justify-center items-center h-full">
-            <SkinPreview skins={skins} selectedParts={selectedParts} />
+            <SkinPreview
+              skins={skins}
+              selectedParts={selectedParts}
+              data-testid="skin-preview"
+            />
           </div>
         </div>
 
@@ -158,13 +184,14 @@ const MinecraftSkinMergerPage = () => {
           <div className="grid grid-cols-1 gap-4">
             {skins.slice(2, 4).map((skin, index) => (
               <SkinUploader
-                key={`skinUploader-${skin ? skin.name : index + 2}`}
+                key={`skinUploader-${index + 2}`}
                 index={index + 2}
                 skin={skin}
                 onUpload={handleSkinUpload}
                 onDelete={handleSkinDelete}
                 selectedParts={selectedParts}
                 onPartSelection={handlePartSelection}
+                data-testid={`skin-uploader-${index + 2}`}
               />
             ))}
           </div>
@@ -172,14 +199,23 @@ const MinecraftSkinMergerPage = () => {
       </div>
 
       <div className="mt-8 text-center">
-        <Button onClick={mergeSkins} className="mb-4">
+        <Button
+          onClick={mergeSkins}
+          className="mb-4"
+          data-testid="merge-skins-button"
+        >
           Merge Skins
         </Button>
 
-        {mergedSkin && <MergedSkinViewer mergedSkin={mergedSkin} />}
+        {mergedSkin && (
+          <MergedSkinViewer
+            mergedSkin={mergedSkin}
+            data-testid="merged-skin-viewer"
+          />
+        )}
 
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" data-testid="error-alert">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>

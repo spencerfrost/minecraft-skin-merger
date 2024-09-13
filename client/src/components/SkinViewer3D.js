@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 import * as skinview3d from 'skinview3d';
 
@@ -25,9 +26,8 @@ const SkinViewer3D = ({ skinUrl }) => {
       // Set initial camera position
       skinViewer.current.camera.position.set(30, 0, 0);
       skinViewer.current.camera.lookAt(0, 0, 0);
-
       // Enable auto rotate
-      skinViewer.current.autoRotate = true;
+      skinViewer.current.autoRotate = false;
 
       // Zoom out
       skinViewer.current.zoom = 0.9;
@@ -48,6 +48,10 @@ const SkinViewer3D = ({ skinUrl }) => {
   }, [skinUrl]);
 
   return <canvas ref={canvasRef} />;
+};
+
+SkinViewer3D.propTypes = {
+  skinUrl: PropTypes.string.isRequired,
 };
 
 export default SkinViewer3D;
