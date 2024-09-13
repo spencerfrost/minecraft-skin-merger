@@ -88,11 +88,11 @@ jobs:
             echo "Checking SSH connection..."
             
             # Debug: Test SSH connection with StrictHostKeyChecking disabled
-            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "echo 'SSH connection successful' || echo 'SSH connection failed'"
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "echo 'SSH connection successful' || echo 'SSH connection failed'"
             
             # Debug: Check directory existence and permissions
             echo "Checking server directory structure..."
-            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
               bash -c '
                 echo "Checking /var/www/minecraft-skin-merger directory..."
                 ls -ld /var/www/minecraft-skin-merger || echo "Directory /var/www/minecraft-skin-merger does not exist"
@@ -104,7 +104,7 @@ jobs:
             
             # Debug: Output ecosystem config
             echo "Checking ecosystem.config.js file..."
-            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
               bash -c '
                 if [ -f /var/www/minecraft-skin-merger/ecosystem.config.js ]; then
                   echo "ecosystem.config.js found, displaying content:"
@@ -117,25 +117,23 @@ jobs:
             
             # Deploy client build files
             echo "Deploying client build files..."
-            scp -o StrictHostKeyChecking=no -vr /home/circleci/project/client/build/* \
-                $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
+            scp -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
             
             # Debug: Verify client deployment
             echo "Verifying client files on the server..."
-            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
             
             # Deploy server files and package.json
             echo "Deploying server files and package.json..."
-            scp -o StrictHostKeyChecking=no -vr /home/circleci/project/server/* \
-                $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            scp -o StrictHostKeyChecking=no /home/circleci/project/server/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             
             # Debug: Verify server deployment
             echo "Verifying server files on the server..."
-            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
             
             # Connect via SSH, install production dependencies, restart PM2 and Nginx
             echo "Installing dependencies and restarting services..."
-            ssh -o StrictHostKeyChecking=no -v $SSH_USER@$SSH_HOST \<< EOF
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
               cd /var/www/minecraft-skin-merger/server
               echo "Installing npm production dependencies..."
               npm install --production || echo "npm install failed"
