@@ -117,7 +117,7 @@ jobs:
             
             # Deploy client build files
             echo "Deploying client build files..."
-            scp -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
+            scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
             
             # Debug: Verify client deployment
             echo "Verifying client files on the server..."
@@ -125,7 +125,7 @@ jobs:
             
             # Deploy server files and package.json
             echo "Deploying server files and package.json..."
-            scp -o StrictHostKeyChecking=no /home/circleci/project/server/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             
             # Debug: Verify server deployment
             echo "Verifying server files on the server..."
