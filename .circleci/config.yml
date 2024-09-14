@@ -12,10 +12,6 @@ jobs:
           node-version: 20.17.0
       - node/install-packages:
           pkg-manager: npm
-          cache-path: ~/project/node_modules
-          override-ci-command: npm ci
-      - node/install-packages:
-          pkg-manager: npm
           app-dir: ~/project/client
           cache-path: ~/project/client/node_modules
           override-ci-command: npm ci

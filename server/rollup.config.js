@@ -4,7 +4,7 @@ import resolve from "@rollup/plugin-node-resolve";
 export default {
   input: "src/server.js",
   output: {
-    file: "dist/server.js",
+    file: "dist/server.mjs",
     format: "esm", // Output as ES module
     sourcemap: true,
   },
