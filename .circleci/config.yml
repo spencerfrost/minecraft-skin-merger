@@ -65,6 +65,13 @@ jobs:
           fingerprints:
             - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
       - run:
+          name: Setup and Debug Environment
+          command: |
+            unset DEPLOY_PATH
+            echo 'export SSH_USER=${SSH_USER}' >> "$BASH_ENV"
+            echo 'export SSH_HOST=${SSH_HOST}' >> "$BASH_ENV"
+            source "$BASH_ENV"
+      - run:
           name: Deploy to Server
           command: |
             source "$BASH_ENV"
