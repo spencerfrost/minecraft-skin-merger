@@ -6,7 +6,6 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "rename-cjs": "find dist -name '*.js' -exec bash -c 'mv \"$0\" \"${0%.js}.cjs\"' {} \\;",
     "dev": "nodemon src/server.js",
     "build": "rollup -c"
   },

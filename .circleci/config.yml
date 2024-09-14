@@ -5,29 +5,38 @@ orbs:
 jobs:
   setup:
     docker:
-      - image: cimg/node:18.0.0
+      - image: cimg/node:20.17.0
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - npm-packages-{{ checksum "package-lock.json" }}-{{ checksum "client/package-lock.json" }}-{{ checksum "server/package-lock.json" }}
-      - run:
-          name: Install project dependencies
-          command: npm run ci-all
-      - save_cache:
-          paths:
-            - ~/.npm
-          key: npm-packages-{{ checksum "package-lock.json" }}-{{ checksum "client/package-lock.json" }}-{{ checksum "server/package-lock.json" }}
+      - node/install:
+          node-version: 20.17.0
+      - node/install-packages:
+          pkg-manager: npm
+          cache-path: ~/project/node_modules
+          override-ci-command: npm ci
+      - node/install-packages:
+          pkg-manager: npm
+          app-dir: ~/project/client
+          cache-path: ~/project/client/node_modules
+          override-ci-command: npm ci
+      - node/install-packages:
+          pkg-manager: npm
+          app-dir: ~/project/server
+          cache-path: ~/project/server/node_modules
+          override-ci-command: npm ci
       - persist_to_workspace:
           root: .
           paths:
             - .
+
   test:
     docker:
-      - image: cimg/node:18.0.0
+      - image: cimg/node:20.17.0
     steps:
       - attach_workspace:
           at: .
+      - node/install:
+          node-version: 20.17.0
       - run:
           name: Run ESLint
           command: npx eslint . --config .eslintrc.json || true
@@ -37,10 +46,12 @@ jobs:
 
   build:
     docker:
-      - image: cimg/node:18.0.0
+      - image: cimg/node:20.17.0
     steps:
       - attach_workspace:
           at: .
+      - node/install:
+          node-version: 20.17.0
       - run:
           name: Build client
           command: npm run build --prefix client
@@ -57,7 +68,7 @@ jobs:
 
   deploy:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:20.17.0
     steps:
       - attach_workspace:
           at: /home/circleci/project
@@ -83,7 +94,7 @@ jobs:
             scp -o StrictHostKeyChecking=no /home/circleci/project/server/package*.json $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
             
-            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
               cd /var/www/minecraft-skin-merger/server
               echo "Installing npm production dependencies..."
               npm install --production || echo "npm install failed"
@@ -92,8 +103,6 @@ jobs:
               echo "Restarting Nginx..."
               sudo systemctl restart nginx || echo "Nginx restart failed"
             EOF
-
-
 
 workflows:
   setup-test-build-deploy:
