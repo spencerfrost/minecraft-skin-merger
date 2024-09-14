@@ -2,12 +2,13 @@
   "name": "minecraft-skin-merger-server",
   "version": "1.0.0",
   "description": "Backend server for Minecraft Skin Merger",
-  "main": "dist/server.js",
   "type": "module",
+  "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
+    "rename-cjs": "find dist -name '*.js' -exec bash -c 'mv \"$0\" \"${0%.js}.cjs\"' {} \\;",
     "dev": "nodemon src/server.js",
-    "build": "babel src -d dist"
+    "build": "rollup -c"
   },
   "keywords": [
     "minecraft",
@@ -29,6 +30,9 @@
     "@babel/cli": "^7.25.6",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
-    "nodemon": "^2.0.7"
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "nodemon": "^2.0.7",
+    "rollup": "^4.21.3"
   }
 }

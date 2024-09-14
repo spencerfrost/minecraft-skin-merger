@@ -65,41 +65,17 @@ jobs:
           fingerprints:
             - "SHA256:6+qHFQDbqCYFzFzHfY7fpBaly2rEB83DUxswOGj6dkI"
       - run:
-          name: Setup and Debug Environment
-          command: |
-            # Unset any old variables that might be interfering
-            unset DEPLOY_PATH
-            
-            # Export necessary variables
-            echo 'export SSH_USER=${SSH_USER}' >> "$BASH_ENV"
-            echo 'export SSH_HOST=${SSH_HOST}' >> "$BASH_ENV"
-            
-            # Source the Bash environment
-            source "$BASH_ENV"
-            
-            # Debug prints (safe parts only)
-            echo "SSH_USER is set: $(if [ -n "$SSH_USER" ]; then echo "Yes"; else echo "No"; fi)"
-            echo "SSH_HOST is set: $(if [ -n "$SSH_HOST" ]; then echo "Yes"; else echo "No"; fi)"
-            echo "Destination path: /var/www/minecraft-skin-merger"
-      - run:
           name: Deploy to Server
           command: |
-            # Source the Bash environment
             source "$BASH_ENV"
             
-            # Deploy client build files
             scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
-            
-            # Debug: Verify client deployment
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
             
-            # Deploy server files and package.json
-            scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/dist/* /home/circleci/project/server/package*.json $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
-            
-            # Debug: Verify server deployment 
+            scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/dist/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
+            scp -o StrictHostKeyChecking=no /home/circleci/project/server/package*.json $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
             
-            # Connect via SSH, install production dependencies, restart PM2 and Nginx
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
               cd /var/www/minecraft-skin-merger/server
               echo "Installing npm production dependencies..."
