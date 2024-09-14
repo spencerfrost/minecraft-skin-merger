@@ -81,8 +81,6 @@ jobs:
       - run:
           name: Deploy to Server
           command: |
-            source "$BASH_ENV"
-            
             scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
             
@@ -91,15 +89,9 @@ jobs:
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/server || echo 'Server files deployment failed'"
             
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
-              export NVM_DIR="\$HOME/.nvm"
-              [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
-              nvm use 20.17.0 || nvm install 20.17.0
               cd /var/www/minecraft-skin-merger/server
-              echo "Installing npm production dependencies..."
               npm install --production || echo "npm install failed"
-              echo "Restarting PM2..."
               pm2 restart /var/www/minecraft-skin-merger/ecosystem.config.js || echo "PM2 restart failed"
-              echo "Restarting Nginx..."
               sudo systemctl restart nginx || echo "Nginx restart failed"
             EOF
 
