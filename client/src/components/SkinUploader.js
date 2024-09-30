@@ -1,7 +1,7 @@
 import { Search, Upload, X } from "lucide-react";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import MinecraftSkinRenderer from "./PartSelector";
+import PartSelector from "./PartSelector";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 
@@ -110,8 +110,8 @@ const SkinUploader = ({
           </div>
         </form>
         {skin ? (
-          <div className="minecraft-card-content">
-            <MinecraftSkinRenderer
+          <div className="flex items-center justify-center">
+            <PartSelector
               skinUrl={skin}
               skinIndex={index}
               selectedParts={selectedParts}

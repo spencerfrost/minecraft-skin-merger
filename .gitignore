@@ -27,3 +27,4 @@ yarn-error.log*
 
 generate_tree.py
 .vscode/settings.json
+server/src/config/public/merged-skin-*

@@ -136,7 +136,7 @@ const PartSelector = ({
       ref={canvasRef}
       width={256}
       height={128}
-      className="border border-gray-300 cursor-pointer"
+      className="cursor-pointer"
       onClick={handleCanvasClick}
       onMouseMove={handleCanvasMouseMove}
       onMouseLeave={() => setHoveredPart(null)}

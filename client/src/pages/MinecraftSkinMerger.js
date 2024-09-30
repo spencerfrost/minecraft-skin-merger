@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import titleImage from "../assets/title.png";
 import MergedSkinViewer from "../components/MergedSkinViewer";
 import SkinPreview from "../components/SkinPreview";
 import SkinUploader from "../components/SkinUploader";
@@ -124,15 +125,18 @@ const MinecraftSkinMergerPage = () => {
       data-testid="minecraft-skin-merger"
     >
       <div className="container mx-auto max-w-6xl">
-        <h1
-          className="text-4xl font-minecraft text-text-white text-center mb-2 text-shadow-minecraft"
-          data-testid="merger-title"
-        >
-          Minecraft Skin Merger
-        </h1>
-        <p className="text-center font-minecraft text-text-white mb-8 text-shadow-minecraft">
-          Upload up to 4 skins, select the body parts, and then merge them
-          together to create a new skin.
+        <img src={titleImage} alt="Minecraft Skin Merger" className="mx-auto" />
+        <p className="text-center mb-8 flex justify-center">
+          <span className="font-minecraft text-text-white relative px-2 py-1">
+            <span className="relative z-10">
+              Upload up to 4 skins, select the body parts, and then merge them
+              together to create a new skin.
+            </span>
+            <span
+              className="absolute inset-0 bg-black opacity-50"
+              aria-hidden="true"
+            />
+          </span>
         </p>
 
         <div className="grid grid-cols-3 gap-4">
