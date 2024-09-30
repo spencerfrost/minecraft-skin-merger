@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "../../lib/utils";
 
-const Card = React.forwardRef(({ className, children, ...props }, ref) => (
+const MinecraftCard = React.forwardRef(({ className, children, ...props }, ref) => (
   <div className={cn("relative", className)}>
     <div 
       className="grid h-full w-full"
@@ -63,10 +63,10 @@ const Card = React.forwardRef(({ className, children, ...props }, ref) => (
   </div>
 ));
 
-Card.displayName = 'Card';
+MinecraftCard.displayName = 'MinecraftCard';
 
 const CardHeader = ({ className, ...props }) => (
-  <div className={cn("mb-1 flex justify-between items-center", className )} {...props} />
+  <div className={cn("mb-1", className)} {...props} />
 );
 
 const CardTitle = ({ className, ...props }) => (
@@ -93,5 +93,5 @@ const CardFooter = ({ className, ...props }) => (
   <div className={cn("mt-2", className)} {...props} />
 );
 
-export { Card, CardContent, CardFooter, CardHeader, CardTitle };
+export { CardContent, CardFooter, CardHeader, CardTitle, MinecraftCard };
 

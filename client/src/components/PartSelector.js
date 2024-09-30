@@ -12,7 +12,7 @@ const isOverlayPart = (part) =>
     "Right Pant",
   ].includes(part);
 
-const MinecraftSkinRenderer = ({
+const PartSelector = ({
   skinUrl,
   skinIndex,
   selectedParts,
@@ -144,11 +144,11 @@ const MinecraftSkinRenderer = ({
   );
 };
 
-MinecraftSkinRenderer.propTypes = {
+PartSelector.propTypes = {
   skinUrl: PropTypes.string.isRequired,
   skinIndex: PropTypes.number.isRequired,
   selectedParts: PropTypes.object.isRequired,
   onPartSelection: PropTypes.func.isRequired,
 };
 
-export default MinecraftSkinRenderer;
+export default PartSelector;

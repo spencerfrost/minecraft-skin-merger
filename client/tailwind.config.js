@@ -18,44 +18,36 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
+        'minecraft-btn': '#999999',
+        'minecraft-btn-hover': 'rgba(100, 100, 255, 0.45)',
+        'text-white': '#FCFCFC',
+        'text-white-hover': '#FFFFA0',
+        'text-gray': '#3f3f3f',
+        'card': '#c6c6c6',
+        'input': '#8b8b8b',
+        'input-hover': '#c5c5c5',
+        'card-border-top': '#ffffff',
+        'card-border-bottom': '#555555',
+        'input-border-top': '#555555',
+        'input-border-bottom': '#FFFFFF',
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      backgroundImage: {
+        'minecraft-btn': "url('https://i.ibb.co/rb2TWXL/bgbtn.png')",
+        'minecraft-bg': "url('https://i.ibb.co/bH3JY30/IE1G7Lr.png')",
+      },
+      boxShadow: {
+        'minecraft-btn': 'inset -2px -4px rgba(0, 0, 0, 0.4), inset 2px 2px rgba(255, 255, 255, 0.7)',
+        'minecraft-btn-active': 'inset -2px -4px rgba(0, 0, 0, 0.2), inset 2px 2px rgba(255, 255, 255, 0.3)',
+        'minecraft': '0 2px 0 rgba(0, 0, 0, 0.2)',
+        'minecraft-inset': 'inset -2px -4px 0 0 rgba(0, 0, 0, 0.3), inset 2px 2px 0 0 rgba(255, 255, 255, 0.3)',
+      },
+      fontFamily: {
+        'minecraft': ['MinecraftRegular', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
@@ -73,5 +65,39 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.mc-button': {
+          cursor: 'pointer',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          userSelect: 'none',
+          imageRendering: 'pixelated',
+          border: '2px solid #000',
+        },
+        '.mc-button-title': {
+          width: '100%',
+          height: '100%',
+          paddingBottom: '0.3em',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'theme("colors.text-white")',
+          textShadow: '2px 2px rgba(0, 0, 0, 0.5)',
+          boxShadow: 'theme("boxShadow.minecraft-btn")',
+        },
+        '.mc-button:hover .mc-button-title': {
+          backgroundColor: 'theme("colors.minecraft-btn-hover")',
+          textShadow: '2px 2px rgba(32, 32, 19, 0.8)',
+          color: 'theme("colors.text-white-hover")',
+        },
+        '.mc-button:active .mc-button-title': {
+          boxShadow: 'theme("boxShadow.minecraft-btn-active")',
+        },
+      };
+      addUtilities(newUtilities, ['responsive', 'hover', 'active']);
+    }
+  ],
 }

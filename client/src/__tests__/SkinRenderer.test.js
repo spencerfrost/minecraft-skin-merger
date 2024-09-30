@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import SkinRenderer from "../components/SkinRenderer.js";
+import SkinRenderer from "../components/PartSelector.js";
 
 describe("SkinRenderer", () => {
   const mockSkinUrl = "http://example.com/skin.png";

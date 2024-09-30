@@ -119,91 +119,92 @@ const MinecraftSkinMergerPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4" data-testid="minecraft-skin-merger">
-      <h1
-        className="text-3xl font-bold mb-2 text-center"
-        data-testid="merger-title"
-      >
-        Minecraft Skin Merger
-      </h1>
-      {/* By Spencer Frost */}
-      <h5
-        className="text-xl font-bold mb-2 text-center"
-        data-testid="merger-subtitle"
-      >
-        By Spencer Frost
-      </h5>
-      <p className="text-center mb-8">
-        Upload up to 4 skins, select the body parts, and then merge them
-        together to create a new skin.
-      </p>
+    <div
+      className="min-h-screen bg-minecraft-bg bg-cover bg-center p-4"
+      data-testid="minecraft-skin-merger"
+    >
+      <div className="container mx-auto max-w-6xl">
+        <h1
+          className="text-4xl font-minecraft text-text-white text-center mb-2 text-shadow-minecraft"
+          data-testid="merger-title"
+        >
+          Minecraft Skin Merger
+        </h1>
+        <p className="text-center font-minecraft text-text-white mb-8 text-shadow-minecraft">
+          Upload up to 4 skins, select the body parts, and then merge them
+          together to create a new skin.
+        </p>
 
-      <div className="flex flex-col lg:flex-row gap-4 mb-8">
-        <div className="lg:w-1/4">
-          <div className="grid grid-cols-1 gap-4">
-            {skins.slice(0, 2).map((skin, index) => (
-              <SkinUploader
-                key={`skinUploader-${index}`}
-                index={index}
-                skin={skin}
-                onUpload={handleSkinUpload}
-                onDelete={handleSkinDelete}
-                selectedParts={selectedParts}
-                onPartSelection={handlePartSelection}
-                data-testid={`skin-uploader-${index}`}
-              />
-            ))}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-1">
+            <div className="grid grid-cols-1 gap-4">
+              {skins.slice(0, 2).map((skin, index) => (
+                <SkinUploader
+                  key={`skinUploader-${index}`}
+                  index={index}
+                  skin={skin}
+                  onUpload={handleSkinUpload}
+                  onDelete={handleSkinDelete}
+                  selectedParts={selectedParts}
+                  onPartSelection={handlePartSelection}
+                  data-testid={`skin-uploader-${index}`}
+                />
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="lg:w-1/2">
-          <div className="flex justify-center items-center h-full">
+          <div className="col-span-1">
             <SkinPreview
               skins={skins}
               selectedParts={selectedParts}
+              className="h-full"
               data-testid="skin-preview"
             />
           </div>
-        </div>
 
-        <div className="lg:w-1/4">
-          <div className="grid grid-cols-1 gap-4">
-            {skins.slice(2, 4).map((skin, index) => (
-              <SkinUploader
-                key={`skinUploader-${index + 2}`}
-                index={index + 2}
-                skin={skin}
-                onUpload={handleSkinUpload}
-                onDelete={handleSkinDelete}
-                selectedParts={selectedParts}
-                onPartSelection={handlePartSelection}
-                data-testid={`skin-uploader-${index + 2}`}
-              />
-            ))}
+          <div className="col-span-1">
+            <div className="grid grid-cols-1 gap-4">
+              {skins.slice(2, 4).map((skin, index) => (
+                <SkinUploader
+                  key={`skinUploader-${index + 2}`}
+                  index={index + 2}
+                  skin={skin}
+                  onUpload={handleSkinUpload}
+                  onDelete={handleSkinDelete}
+                  selectedParts={selectedParts}
+                  onPartSelection={handlePartSelection}
+                  data-testid={`skin-uploader-${index + 2}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-8 text-center">
-        <Button
-          onClick={mergeSkins}
-          className="mb-4"
-          data-testid="merge-skins-button"
-        >
-          Merge Skins
-        </Button>
+        <div className="mt-4 flex justify-center">
+          <Button onClick={mergeSkins} data-testid="merge-skins-button">
+            Merge Skins
+          </Button>
+        </div>
 
         {mergedSkin && (
-          <MergedSkinViewer
-            mergedSkin={mergedSkin}
-            data-testid="merged-skin-viewer"
-          />
+          <div className="mt-8">
+            <MergedSkinViewer
+              mergedSkin={mergedSkin}
+              data-testid="merged-skin-viewer"
+            />
+          </div>
         )}
 
         {error && (
-          <Alert variant="destructive" data-testid="error-alert">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+          <Alert
+            variant="destructive"
+            data-testid="error-alert"
+            className="mt-8"
+          >
+            <AlertTitle className="font-minecraft">Error</AlertTitle>
+            <AlertDescription className="font-minecraft">
+              {error}
+            </AlertDescription>
           </Alert>
         )}
       </div>
