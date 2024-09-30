@@ -30,6 +30,13 @@ const SkinViewer3D = ({ skinUrl }) => {
       skinViewer.current.cameraLight.intensity = 2;
       skinViewer.current.background = "#000000";
     }
+
+    return () => {
+      if (skinViewer.current) {
+        skinViewer.current.dispose();
+        skinViewer.current = null;
+      }
+    };
   }, [skinUrl]);
 
   return (
@@ -38,11 +45,7 @@ const SkinViewer3D = ({ skinUrl }) => {
         <CardTitle>Interactive 3D Preview</CardTitle>
       </CardHeader>
       <CardContent className="p-1 bg-black">
-      {/* <div className="bg-black flex justify-center items-center relative">
-        <div className="absolute inset-0 border-t-2 border-l-2 border-input-border-top" />
-        <div className="absolute inset-0 border-b-2 border-r-2 border-input-border-bottom" /> */}
         <canvas ref={canvasRef} />
-      {/* </div> */}
       </CardContent>
     </Card>
   );

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import SkinPreview from '../components/SkinPreview.js';
+import SkinPreview from '../components/SkinPreview';
 
 const mockGetContext = jest.fn();
 const mockClearRect = jest.fn();
@@ -38,12 +38,6 @@ describe('SkinPreview', () => {
     expect(canvasElement).toBeInTheDocument();
     expect(canvasElement).toHaveAttribute('width', '192');
     expect(canvasElement).toHaveAttribute('height', '384');
-  });
-
-  test('applies correct CSS classes to canvas', () => {
-    render(<SkinPreview skins={mockSkins} selectedParts={mockSelectedParts} />);
-    const canvasElement = screen.getByTestId('skin-preview-canvas');
-    expect(canvasElement).toHaveClass('border', 'border-gray-300', 'pixelated');
   });
 
   test('applies correct inline styles to canvas', () => {

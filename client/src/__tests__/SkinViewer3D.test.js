@@ -1,9 +1,9 @@
+// SkinViewer3D.test.js
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import * as skinview3d from 'skinview3d';
 import SkinViewer3D from '../components/SkinViewer3D';
 
-// Mock skinview3d
 jest.mock('skinview3d', () => ({
   SkinViewer: jest.fn(),
   WalkingAnimation: jest.fn()
@@ -11,12 +11,11 @@ jest.mock('skinview3d', () => ({
 
 describe('SkinViewer3D', () => {
   const mockSkinUrl = 'http://example.com/skin.png';
+  let mockDispose;
 
   beforeEach(() => {
-    // Reset mocks before each test
     jest.clearAllMocks();
-
-    // Mock the SkinViewer constructor and its methods
+    mockDispose = jest.fn();
     skinview3d.SkinViewer.mockImplementation(() => ({
       camera: { position: { set: jest.fn() }, lookAt: jest.fn() },
       animation: null,
@@ -25,30 +24,32 @@ describe('SkinViewer3D', () => {
       globalLight: { intensity: 1 },
       cameraLight: { intensity: 1 },
       background: null,
-      dispose: jest.fn()
+      dispose: mockDispose
     }));
   });
 
-  test('renders a canvas element', () => {
-    const { container } = render(<SkinViewer3D skinUrl={mockSkinUrl} />);
-    const canvasElement = container.querySelector('canvas');
-    expect(canvasElement).toBeInTheDocument();
+  test('renders a Card component with correct structure', () => {
+    const { getByText, container } = render(<SkinViewer3D skinUrl={mockSkinUrl} />);
+    expect(getByText('Interactive 3D Preview')).toBeInTheDocument();
+    expect(container.querySelector('.bg-black')).toBeInTheDocument();
   });
 
   test('initializes SkinViewer with correct props', () => {
     render(<SkinViewer3D skinUrl={mockSkinUrl} />);
     expect(skinview3d.SkinViewer).toHaveBeenCalledWith(
       expect.objectContaining({
-        width: 600,
-        height: 800,
+        width: 500,
+        height: 500,
         skin: mockSkinUrl
       })
     );
   });
 
-  test('sets up animation', () => {
+  test('sets up animation with correct speed', () => {
     render(<SkinViewer3D skinUrl={mockSkinUrl} />);
+    const skinViewerInstance = skinview3d.SkinViewer.mock.results[0].value;
     expect(skinview3d.WalkingAnimation).toHaveBeenCalled();
+    expect(skinViewerInstance.animation.speed).toBe(0.6);
   });
 
   test('configures camera and lighting', () => {
@@ -59,18 +60,19 @@ describe('SkinViewer3D', () => {
     expect(skinViewerInstance.camera.lookAt).toHaveBeenCalledWith(0, 0, 0);
     expect(skinViewerInstance.autoRotate).toBe(false);
     expect(skinViewerInstance.zoom).toBe(0.9);
-    expect(skinViewerInstance.globalLight.intensity).toBe(2);
-    expect(skinViewerInstance.cameraLight.intensity).toBe(1.8);
-    expect(skinViewerInstance.background).toBe(0xeeeeee);
+    expect(skinViewerInstance.globalLight.intensity).toBe(2.8);
+    expect(skinViewerInstance.cameraLight.intensity).toBe(2);
+    expect(skinViewerInstance.background).toBe("#000000");
   });
 
   test('disposes SkinViewer on unmount', () => {
     const { unmount } = render(<SkinViewer3D skinUrl={mockSkinUrl} />);
-    const skinViewerInstance = skinview3d.SkinViewer.mock.results[0].value;
     
-    unmount();
+    act(() => {
+      unmount();
+    });
     
-    expect(skinViewerInstance.dispose).toHaveBeenCalled();
+    expect(mockDispose).toHaveBeenCalled();
   });
 
   test('reinitializes SkinViewer when skinUrl changes', () => {
@@ -84,5 +86,6 @@ describe('SkinViewer3D', () => {
     expect(skinview3d.SkinViewer).toHaveBeenLastCalledWith(
       expect.objectContaining({ skin: newSkinUrl })
     );
+    expect(mockDispose).toHaveBeenCalledTimes(1);
   });
 });
