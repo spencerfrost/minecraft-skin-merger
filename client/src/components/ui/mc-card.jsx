@@ -1,10 +1,10 @@
 import React from 'react';
 import { cn } from "../../lib/utils";
 
-const Card = React.forwardRef(({ className, children, ...props }, ref) => (
+const MinecraftCard = React.forwardRef(({ className, children, ...props }, ref) => (
   <div className={cn("relative", className)}>
     <div 
-      className="card grid h-full w-full"
+      className="grid h-full w-full"
       style={{
         gridTemplateColumns: '2px 2px 1fr 2px 2px',
         gridTemplateRows: '2px 2px 1fr 2px 2px',
@@ -63,20 +63,20 @@ const Card = React.forwardRef(({ className, children, ...props }, ref) => (
   </div>
 ));
 
-Card.displayName = 'Card';
+MinecraftCard.displayName = 'MinecraftCard';
 
 const CardHeader = ({ className, ...props }) => (
-  <div className={cn("card-header mb-1 flex justify-between items-center", className )} {...props} />
+  <div className={cn("mb-1", className)} {...props} />
 );
 
 const CardTitle = ({ className, ...props }) => (
-  <h3 className={cn("card-title text-xl font-minecraft text-text-gray", className)} {...props} />
+  <h3 className={cn("text-xl font-minecraft text-text-gray", className)} {...props} />
 );
 
 const CardContent = ({ className, ...props }) => (
   <div 
     className={cn(
-      "card-content bg-input px-2 relative",
+      "bg-input px-2 relative",
       className
     )} 
     {...props} 
@@ -90,8 +90,8 @@ const CardContent = ({ className, ...props }) => (
 );
 
 const CardFooter = ({ className, ...props }) => (
-  <div className={cn("card-footer mt-2", className)} {...props} />
+  <div className={cn("mt-2", className)} {...props} />
 );
 
-export { Card, CardContent, CardFooter, CardHeader, CardTitle };
+export { CardContent, CardFooter, CardHeader, CardTitle, MinecraftCard };
 

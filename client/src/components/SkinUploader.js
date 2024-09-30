@@ -1,8 +1,9 @@
 import { Search, Upload, X } from "lucide-react";
+import PropTypes from "prop-types";
 import { useState } from "react";
-import "../styles/SkinUploader.css";
-import MinecraftSkinRenderer from "./SkinRenderer";
+import MinecraftSkinRenderer from "./PartSelector";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
 
 const SkinUploader = ({
   index,
@@ -72,37 +73,44 @@ const SkinUploader = ({
 
   return (
     <Card>
-      <CardHeader className="py-4">
+      <CardHeader>
         <CardTitle>
           Skin {index + 1}
-          {skin && (
-            <button
-              onClick={handleDelete}
-              className="float-right py-0 text-gray-500 hover:text-red-500"
-            >
-              <X />
-            </button>
-          )}
         </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSearch} className="mb-4">
-          <input
-            type="text"
-            placeholder="Search by name or UUID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="mr-2 p-2 border rounded"
-          />
+        {skin && (
           <button
-            type="submit"
-            className="px-2 text-gray-500 hover:text-blue-500"
+            onClick={handleDelete}
+            className="minecraft-btn"
+            aria-label="Delete skin"
           >
-            <Search />
+            <span className="title">
+              <X className="w-4 h-4" />
+            </span>
           </button>
+        )}
+      </CardHeader>
+      <CardContent className="p-2">
+        <form onSubmit={handleSearch} className="mb-4">
+          <div className="flex">
+            <Input
+              type="text"
+              placeholder="Search by name or UUID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="minecraft-btn p-2"
+              aria-label="Search skin"
+            >
+              <span className="title">
+                <Search className="w-4 h-4" />
+              </span>
+            </button>
+          </div>
         </form>
         {skin ? (
-          <div className="flex justify-center">
+          <div className="minecraft-card-content">
             <MinecraftSkinRenderer
               skinUrl={skin}
               skinIndex={index}
@@ -111,21 +119,31 @@ const SkinUploader = ({
             />
           </div>
         ) : (
-          <div className="flex items-center justify-center h-32 bg-gray-100 rounded">
-            <label className="cursor-pointer">
+          <div className="flex items-center justify-center h-32 minecraft-card-content">
+            <label className="cursor-pointer flex flex-col items-center">
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleSkinUpload}
                 className="hidden"
               />
-              <Upload className="w-8 h-8 text-gray-400" />
+              <Upload className="w-8 h-8 text-text-white mb-2" />
+              <span className="font-minecraft text-text-white text-shadow-minecraft">Upload Skin</span>
             </label>
           </div>
         )}
       </CardContent>
     </Card>
   );
+};
+
+SkinUploader.propTypes = {
+  index: PropTypes.number.isRequired,
+  skin: PropTypes.string,
+  onUpload: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  selectedParts: PropTypes.object.isRequired,
+  onPartSelection: PropTypes.func.isRequired,
 };
 
 export default SkinUploader;

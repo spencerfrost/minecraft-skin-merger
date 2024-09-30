@@ -1,39 +1,24 @@
-import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const SkinTexture2D = ({ skinUrl }) => {
   const [imageError, setImageError] = useState(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    console.log('SkinTexture2D: Attempting to load image from URL:', skinUrl);
-    
-    // Test the URL with a fetch request
-    fetch(skinUrl)
-      .then(response => {
+    const fetchImage = async () => {
+      try {
+        const response = await fetch(skinUrl);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        } 
-        return response.blob();
-      })
-      .then(blob => {
-        console.log('SkinTexture2D: Fetch successful, content type:', blob.type);
-      })
-      .catch(e => {
-        console.error('SkinTexture2D: Fetch error:', e);
+        }
+        await response.blob(); // Check response but no need to store the blob
+      } catch (e) {
         setImageError(`Fetch error: ${e.message}`);
-      });
+      }
+    };
+    fetchImage();
   }, [skinUrl]);
-
-  const handleImageError = (e) => {
-    console.error('SkinTexture2D: Error loading image:', e);
-    setImageError(`Load error: ${e.type}`);
-  };
-
-  const handleImageLoad = () => {
-    console.log('SkinTexture2D: Image loaded successfully');
-    setImageLoaded(true);
-  };
 
   if (imageError) {
     return (
@@ -44,17 +29,20 @@ const SkinTexture2D = ({ skinUrl }) => {
   }
 
   return (
-    <div className="border border-gray-300 p-2 bg-white">
-      {!imageLoaded && <div>Loading...</div>}
-      <img 
-        src={skinUrl} 
-        alt="Skin Texture" 
-        className={`w-full h-auto ${imageLoaded ? '' : 'hidden'}`}
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-        crossOrigin="anonymous"
-      />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>2D Skin Texture</CardTitle>
+      </CardHeader>
+      <CardContent className="p-2 bg-white">
+        <img
+          src={skinUrl}
+          alt="Skin Texture"
+          className={`w-full h-auto`}
+          crossOrigin="anonymous"
+          style={{ imageRendering: "pixelated" }}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

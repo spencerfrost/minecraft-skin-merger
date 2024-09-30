@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import SkinTexture2D from '../components/SkinTexture2D.js';
+import SkinTexture2D from '../components/SkinTexture2D';
 
 const mockSkinUrl = 'http://example.com/skin.png';
 
@@ -17,11 +17,6 @@ describe('SkinTexture2D', () => {
     render(<SkinTexture2D skinUrl={mockSkinUrl} />);
   });
 
-  it('displays loading state initially', async () => {
-    const { getByText } = render(<SkinTexture2D skinUrl={mockSkinUrl} />);
-    expect(getByText('Loading...')).toBeInTheDocument();
-  });
-
   it('renders the image when loaded successfully', async () => {
     const { getByAltText } = render(<SkinTexture2D skinUrl={mockSkinUrl} />);
     await waitFor(() => {
@@ -29,4 +24,11 @@ describe('SkinTexture2D', () => {
     });
   });
 
+  it('renders error message when image fails to load', async () => {
+    global.fetch = jest.fn(() => Promise.reject(new Error('Failed to fetch')));
+    const { getByText } = render(<SkinTexture2D skinUrl={mockSkinUrl} />);
+    await waitFor(() => {
+      expect(getByText(/Error loading skin texture/)).toBeInTheDocument();
+    });
+  });
 });

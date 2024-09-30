@@ -1,10 +1,13 @@
+// MinecraftSkinMerger.test.js
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import MinecraftSkinMerger from '../pages/MinecraftSkinMerger';
 
 // Mock child components
-jest.mock('../components/SkinUploader', () => ({ index }) => (
-  <div data-testid={`skin-uploader-${index}`}>Mocked SkinUploader</div>
+jest.mock('../components/SkinUploader', () => ({ index, onUpload }) => (
+  <div data-testid={`skin-uploader-${index}`}>
+    <button onClick={() => onUpload(index, `mock-skin-data-${index}`)}>Upload Skin</button>
+  </div>
 ));
 
 jest.mock('../components/SkinPreview', () => () => (
@@ -19,7 +22,7 @@ jest.mock('../components/MergedSkinViewer', () => ({ mergedSkin }) => (
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ mergedSkinUrl: 'mock-merged-skin-url' }),
+    json: () => Promise.resolve({ mergedSkinUrl: '/mock-merged-skin-url' }),
   })
 );
 
@@ -32,8 +35,7 @@ describe('MinecraftSkinMerger', () => {
     render(<MinecraftSkinMerger />);
     
     expect(screen.getByTestId('minecraft-skin-merger')).toBeInTheDocument();
-    expect(screen.getByTestId('merger-title')).toHaveTextContent('Minecraft Skin Merger');
-    expect(screen.getByTestId('merger-subtitle')).toHaveTextContent('By Spencer Frost');
+    expect(screen.getByText('Minecraft Skin Merger')).toBeInTheDocument();
     expect(screen.getByText('Upload up to 4 skins, select the body parts, and then merge them together to create a new skin.')).toBeInTheDocument();
   });
 
@@ -50,17 +52,16 @@ describe('MinecraftSkinMerger', () => {
     expect(screen.getByTestId('skin-preview')).toBeInTheDocument();
   });
 
-  test('renders merge button', () => {
-    render(<MinecraftSkinMerger />);
-    
-    const mergeButton = screen.getByTestId('merge-skins-button');
-    expect(mergeButton).toBeInTheDocument();
-    expect(mergeButton).toHaveTextContent('Merge Skins');
-  });
+  test('displays error message when merge fails', async () => {
+    global.fetch.mockImplementationOnce(() => Promise.reject(new Error('Merge failed')));
 
-  test('does not render MergedSkinViewer initially', () => {
     render(<MinecraftSkinMerger />);
     
-    expect(screen.queryByTestId('merged-skin-viewer')).not.toBeInTheDocument();
+    const mergeButton = screen.getByText('Merge Skins');
+    fireEvent.click(mergeButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Error merging skins/)).toBeInTheDocument();
+    });
   });
 });

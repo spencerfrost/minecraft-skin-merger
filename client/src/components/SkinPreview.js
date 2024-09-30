@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
 import { skinRegions } from "../constants/skinParts";
+import { MinecraftCard } from "./ui/mc-card";
 
 const SkinPreview = ({ skins, selectedParts }) => {
   const canvasRef = useRef(null);
@@ -56,16 +57,19 @@ const SkinPreview = ({ skins, selectedParts }) => {
   }, [skins, selectedParts]);
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
-      <canvas
-        ref={canvasRef}
-        width={192}
-        height={384}
-        className="border border-gray-300 pixelated"
-        style={{ imageRendering: "pixelated" }}
-        data-testid="skin-preview-canvas"
-      />
-    </div>
+    <MinecraftCard className="h-full">
+      <div className="bg-black h-full flex justify-center items-center relative">
+        <div className="absolute inset-0 border-t-2 border-l-2 border-input-border-top" />
+        <div className="absolute inset-0 border-b-2 border-r-2 border-input-border-bottom" />
+        <canvas
+          ref={canvasRef}
+          width={192}
+          height={384}
+          style={{ imageRendering: "pixelated" }}
+          data-testid="skin-preview-canvas"
+        />
+      </div>
+    </MinecraftCard>
   );
 };
 

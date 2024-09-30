@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types';
-import { useEffect, useRef } from 'react';
-import * as skinview3d from 'skinview3d';
+import PropTypes from "prop-types";
+import { useEffect, useRef } from "react";
+import * as skinview3d from "skinview3d";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const SkinViewer3D = ({ skinUrl }) => {
   const canvasRef = useRef(null);
@@ -14,41 +15,40 @@ const SkinViewer3D = ({ skinUrl }) => {
 
       skinViewer.current = new skinview3d.SkinViewer({
         canvas: canvasRef.current,
-        width: 600,
-        height: 800,
-        skin: skinUrl
+        width: 500,
+        height: 500,
+        skin: skinUrl,
       });
 
-      // Add animation
       skinViewer.current.animation = new skinview3d.WalkingAnimation();
       skinViewer.current.animation.speed = 0.6;
-
-      // Set initial camera position
       skinViewer.current.camera.position.set(0, 0, 60);
       skinViewer.current.camera.lookAt(0, 0, 0);
-
-      // Enable auto rotate
       skinViewer.current.autoRotate = false;
-
-      // Zoom out
       skinViewer.current.zoom = 0.9;
-
-      // Adjust lighting for better visibility
-      skinViewer.current.globalLight.intensity = 2;
-      skinViewer.current.cameraLight.intensity = 1.8;
-
-      // Set a light background color
-      skinViewer.current.background = 0xeeeeee;
+      skinViewer.current.globalLight.intensity = 2.8;
+      skinViewer.current.cameraLight.intensity = 2;
+      skinViewer.current.background = "#000000";
     }
 
     return () => {
       if (skinViewer.current) {
         skinViewer.current.dispose();
+        skinViewer.current = null;
       }
     };
   }, [skinUrl]);
 
-  return <canvas ref={canvasRef} />;
+  return (
+    <Card className="w-full h-full">
+      <CardHeader>
+        <CardTitle>Interactive 3D Preview</CardTitle>
+      </CardHeader>
+      <CardContent className="p-1 bg-black">
+        <canvas ref={canvasRef} />
+      </CardContent>
+    </Card>
+  );
 };
 
 SkinViewer3D.propTypes = {
