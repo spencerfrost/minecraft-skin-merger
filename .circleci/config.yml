@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Deploy to Server
           command: |
-            scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client/build
+            scp -r -o StrictHostKeyChecking=no /home/circleci/project/client/build/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/client
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "ls -la /var/www/minecraft-skin-merger/client || echo 'Client files deployment failed'"
             
             scp -r -o StrictHostKeyChecking=no /home/circleci/project/server/dist/* $SSH_USER@$SSH_HOST:/var/www/minecraft-skin-merger/server
