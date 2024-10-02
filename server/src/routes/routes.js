@@ -20,7 +20,6 @@ router.get("/api/fetch-skin/:name", fetchSkin);
 
 router.get("/download/:filename", (req, res) => {
   const filepath = path.join(config.PUBLIC_DIR, req.params.filename);
-  console.log(`Attempting to download: ${filepath}`);
   res.download(filepath, (err) => {
     if (err) {
       console.error(`Error downloading file: ${err}`);

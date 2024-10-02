@@ -37,7 +37,6 @@ export default async function mergeSkins(req, res) {
     }
 
     if (!skins || skins.length === 0) {
-      console.log("No skin files uploaded");
       return res.status(400).json({ error: "No skin files uploaded" });
     }
 
@@ -47,8 +46,6 @@ export default async function mergeSkins(req, res) {
       const originalIndex = parseInt(skin.originalname.replace(/\D/g, ''));
       skinMap.set(originalIndex, skin);
     });
-
-    console.log("Skin mapping:", Object.fromEntries(skinMap));
 
     const mergedSkin = sharp({
       create: {
@@ -82,7 +79,7 @@ export default async function mergeSkins(req, res) {
           );
         }
       } else {
-        console.log(`No valid region or skin file found for part: ${part}`);
+        console.error(`No valid region or skin file found for part: ${part}`);
       }
     }
 

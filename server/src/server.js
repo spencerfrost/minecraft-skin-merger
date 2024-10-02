@@ -17,7 +17,6 @@ app.use(
   "/public",
   (req, res, next) => {
     const fullPath = path.join(config.PUBLIC_DIR, req.url);
-    console.log(`Attempting to serve: ${fullPath}`);
     next();
   },
   express.static(config.PUBLIC_DIR)
