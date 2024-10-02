@@ -37,8 +37,8 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       backgroundImage: {
-        'minecraft-btn': "url('https://i.ibb.co/rb2TWXL/bgbtn.png')",
-        'minecraft-bg': "url('https://i.ibb.co/bH3JY30/IE1G7Lr.png')",
+        'minecraft-btn': "var(--bg-minecraft-btn)",
+        'minecraft-bg': "var(--bg-minecraft-bg)",
       },
       boxShadow: {
         'minecraft-btn': 'inset -2px -4px rgba(0, 0, 0, 0.4), inset 2px 2px rgba(255, 255, 255, 0.7)',
@@ -98,6 +98,20 @@ module.exports = {
         },
       };
       addUtilities(newUtilities, ['responsive', 'hover', 'active']);
-    }
+    },
+    function({ addBase, theme }) {
+      addBase({
+        ':root': {
+          '--bg-minecraft-btn': "url('assets/optimized/minecraft-btn.jpg')",
+          '--bg-minecraft-bg': "url('assets/optimized/minecraft-bg.jpg')",
+          '@supports (background-image: url("assets/optimized/minecraft-btn.webp"))': {
+            '--bg-minecraft-btn': "url('assets/optimized/minecraft-btn.webp')",
+          },
+          '@supports (background-image: url("assets/optimized/minecraft-bg.webp"))': {
+            '--bg-minecraft-bg': "url('assets/optimized/minecraft-bg.webp')",
+          },
+        },
+      });
+    },
   ],
 }

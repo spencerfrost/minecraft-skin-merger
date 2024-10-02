@@ -37,11 +37,6 @@
 }
 
 @layer utilities {
-  .bg-grass-pattern {
-    background-image: url('../assets/grass.png');
-    background-repeat: repeat;
-  }
-
   .text-shadow-minecraft {
     text-shadow: 2px 2px #3e3e3e;
   }

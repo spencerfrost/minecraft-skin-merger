@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import titleImage from "../assets/title.png";
+import titleImage from "../assets/optimized/title.png";
 import MergedSkinViewer from "../components/MergedSkinViewer";
 import SkinPreview from "../components/SkinPreview";
 import SkinUploader from "../components/SkinUploader";
@@ -125,92 +125,109 @@ const MinecraftSkinMergerPage = () => {
       data-testid="minecraft-skin-merger"
     >
       <div className="container mx-auto max-w-6xl">
-        <img src={titleImage} alt="Minecraft Skin Merger" className="mx-auto" />
-        <p className="text-center mb-8 flex justify-center">
-          <span className="font-minecraft text-text-white relative px-2 py-1">
-            <span className="relative z-10">
-              Upload up to 4 skins, select the body parts, and then merge them
-              together to create a new skin.
+        <header>
+          <img src={titleImage} alt="Minecraft Skin Merger" className="mx-auto" />
+          <p className="text-center mb-8 flex justify-center">
+            <span className="font-minecraft text-text-white relative px-2 py-1">
+              <span className="relative z-10">
+                Upload up to 4 skins, select the body parts, and then merge them
+                together to create a new skin.
+              </span>
+              <span
+                className="absolute inset-0 bg-black opacity-50"
+                aria-hidden="true"
+              />
             </span>
-            <span
-              className="absolute inset-0 bg-black opacity-50"
-              aria-hidden="true"
-            />
-          </span>
-        </p>
+          </p>
+        </header>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-1">
-            <div className="grid grid-cols-1 gap-4">
-              {skins.slice(0, 2).map((skin, index) => (
-                <SkinUploader
-                  key={`skinUploader-${index}`}
-                  index={index}
-                  skin={skin}
-                  onUpload={handleSkinUpload}
-                  onDelete={handleSkinDelete}
+        <main>
+          <section aria-label="Skin Upload and Preview Area">
+            <h2 className="sr-only">Skin Uploaders and Preview</h2>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="col-span-1">
+                <div className="grid grid-cols-1 gap-4">
+                  {skins.slice(0, 2).map((skin, index) => (
+                    <SkinUploader
+                      key={`skinUploader-${index}`}
+                      index={index}
+                      skin={skin}
+                      onUpload={handleSkinUpload}
+                      onDelete={handleSkinDelete}
+                      selectedParts={selectedParts}
+                      onPartSelection={handlePartSelection}
+                      data-testid={`skin-uploader-${index}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="col-span-1">
+                <SkinPreview
+                  skins={skins}
                   selectedParts={selectedParts}
-                  onPartSelection={handlePartSelection}
-                  data-testid={`skin-uploader-${index}`}
+                  className="h-full"
+                  data-testid="skin-preview"
                 />
-              ))}
+              </div>
+
+              <div className="col-span-1">
+                <div className="grid grid-cols-1 gap-4">
+                  {skins.slice(2, 4).map((skin, index) => (
+                    <SkinUploader
+                      key={`skinUploader-${index + 2}`}
+                      index={index + 2}
+                      skin={skin}
+                      onUpload={handleSkinUpload}
+                      onDelete={handleSkinDelete}
+                      selectedParts={selectedParts}
+                      onPartSelection={handlePartSelection}
+                      data-testid={`skin-uploader-${index + 2}`}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div className="col-span-1">
-            <SkinPreview
-              skins={skins}
-              selectedParts={selectedParts}
-              className="h-full"
-              data-testid="skin-preview"
-            />
-          </div>
-
-          <div className="col-span-1">
-            <div className="grid grid-cols-1 gap-4">
-              {skins.slice(2, 4).map((skin, index) => (
-                <SkinUploader
-                  key={`skinUploader-${index + 2}`}
-                  index={index + 2}
-                  skin={skin}
-                  onUpload={handleSkinUpload}
-                  onDelete={handleSkinDelete}
-                  selectedParts={selectedParts}
-                  onPartSelection={handlePartSelection}
-                  data-testid={`skin-uploader-${index + 2}`}
-                />
-              ))}
+          <section aria-label="Merge Controls">
+            <h2 className="sr-only">Merge Skins</h2>
+            <div className="mt-4 flex justify-center">
+              <Button onClick={mergeSkins} data-testid="merge-skins-button">
+                Merge Skins
+              </Button>
             </div>
-          </div>
-        </div>
+          </section>
 
-        <div className="mt-4 flex justify-center">
-          <Button onClick={mergeSkins} data-testid="merge-skins-button">
-            Merge Skins
-          </Button>
-        </div>
+          {mergedSkin && (
+            <section aria-label="Merged Skin Result" className="mt-8">
+              <h2 className="sr-only">Merged Skin Viewer</h2>
+              <MergedSkinViewer
+                mergedSkin={mergedSkin}
+                data-testid="merged-skin-viewer"
+              />
+            </section>
+          )}
 
-        {mergedSkin && (
-          <div className="mt-8">
-            <MergedSkinViewer
-              mergedSkin={mergedSkin}
-              data-testid="merged-skin-viewer"
-            />
-          </div>
-        )}
+          {error && (
+            <section aria-label="Error Messages" className="mt-8">
+              <h2 className="sr-only">Error Information</h2>
+              <Alert
+                variant="destructive"
+                data-testid="error-alert"
+              >
+                <AlertTitle className="font-minecraft">Error</AlertTitle>
+                <AlertDescription className="font-minecraft">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            </section>
+          )}
+        </main>
 
-        {error && (
-          <Alert
-            variant="destructive"
-            data-testid="error-alert"
-            className="mt-8"
-          >
-            <AlertTitle className="font-minecraft">Error</AlertTitle>
-            <AlertDescription className="font-minecraft">
-              {error}
-            </AlertDescription>
-          </Alert>
-        )}
+        <footer className="mt-8 text-center">
+          <p className="font-minecraft text-text-white">&copy; 2024 Minecraft Skin Merger. Created by Spencer Frost.</p>
+        </footer>
       </div>
     </div>
   );
