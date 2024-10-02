@@ -59,7 +59,7 @@ describe('MinecraftSkinMerger', () => {
 
     render(<MinecraftSkinMerger />);
     
-    const mergeButton = screen.getByText('Merge Skins');
+    const mergeButton = screen.getByTestId('merge-skins-button');
     fireEvent.click(mergeButton);
 
     await waitFor(() => {
