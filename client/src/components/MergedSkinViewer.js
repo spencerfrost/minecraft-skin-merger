@@ -25,11 +25,11 @@ const MergedSkinViewer = ({ mergedSkin }) => {
 
   return (
     <div className="mt-4">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="md:w-1/2 flex flex-col">
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="lg:w-1/2 flex flex-col">
           <SkinTexture2D skinUrl={fullSkinUrl} />
         </div>
-        <div className="md:w-1/2 flex flex-col">
+        <div className="lg:w-1/2 flex flex-col">
           <SkinViewer3D skinUrl={fullSkinUrl} />
         </div>
       </div>

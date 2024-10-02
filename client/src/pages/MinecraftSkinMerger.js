@@ -125,16 +125,17 @@ const MinecraftSkinMergerPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-minecraft-bg bg-cover bg-center p-4"
+      className="min-h-screen bg-minecraft-bg bg-cover bg-center p-2 sm:p-4"
       data-testid="minecraft-skin-merger"
     >
-      <div className="container mx-auto max-w-6xl">
-        <header className="mb-8">
+      <div className="md:container mx-auto">
+        <header className="mb-4 sm:mb-8">
           <img src={titleImage} alt="Minecraft Skin Merger" className="mx-auto max-w-full" />
-          <p className="text-center mt-4 flex justify-center px-4">
-            <span className="font-minecraft text-text-white relative px-2 py-1 text-sm sm:text-base">
+          <p className="text-center mt-2 sm:mt-4 flex justify-center px-2 sm:px-4">
+            <span className="font-minecraft text-text-white relative px-2 py-1 text-xs sm:text-sm md:text-base">
               <span className="relative z-10">
-                Add up to 4 skins, select the body parts, and then merge them together to create a new skin.
+                Upload up to 4 skins, select the body parts, and then merge them
+                together to create a new skin.
               </span>
               <span
                 className="absolute inset-0 bg-black opacity-50"
@@ -147,9 +148,9 @@ const MinecraftSkinMergerPage = () => {
         <main>
           <section aria-label="Skin Upload and Preview Area">
             <h2 className="sr-only">Skin Uploaders and Preview</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4">
               <div className="lg:col-span-1 order-2 lg:order-1">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-4">
                   {skins.slice(0, 2).map((skin, index) => (
                     <SkinUploader
                       key={`skinUploader-${index}`}
@@ -175,7 +176,7 @@ const MinecraftSkinMergerPage = () => {
               </div>
 
               <div className="lg:col-span-1 order-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-4">
                   {skins.slice(2, 4).map((skin, index) => (
                     <SkinUploader
                       key={`skinUploader-${index + 2}`}
@@ -193,7 +194,7 @@ const MinecraftSkinMergerPage = () => {
             </div>
           </section>
 
-          <section aria-label="Merge Controls" className="mt-6">
+          <section aria-label="Merge Controls" className="mt-4 sm:mt-6">
             <h2 className="sr-only">Merge Skins</h2>
             <div className="flex justify-center">
               <Button onClick={mergeSkins} data-testid="merge-skins-button">
@@ -203,7 +204,7 @@ const MinecraftSkinMergerPage = () => {
           </section>
 
           {error && (
-            <section aria-label="Error Messages" className="mt-4">
+            <section aria-label="Error Messages" className="mt-2 sm:mt-4">
               <h2 className="sr-only">Error Information</h2>
               <Alert
                 variant="destructive"
@@ -218,7 +219,7 @@ const MinecraftSkinMergerPage = () => {
           )}
 
           {mergedSkin && (
-            <section aria-label="Merged Skin Result" className="mt-8">
+            <section aria-label="Merged Skin Result" className="mt-4 sm:mt-8">
               <h2 className="sr-only">Merged Skin Viewer</h2>
               <MergedSkinViewer
                 mergedSkin={mergedSkin}
@@ -228,8 +229,8 @@ const MinecraftSkinMergerPage = () => {
           )}
         </main>
 
-        <footer className="mt-8 text-center">
-          <p className="font-minecraft text-text-white text-sm">&copy; 2024 Minecraft Skin Merger. Created by Spencer Frost.</p>
+        <footer className="mt-4 sm:mt-8 text-center">
+          <p className="font-minecraft text-text-white text-xs sm:text-sm">&copy; 2024 Minecraft Skin Merger. Created by Spencer Frost.</p>
         </footer>
       </div>
     </div>

@@ -1,22 +1,41 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as skinview3d from "skinview3d";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const SkinViewer3D = ({ skinUrl }) => {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const skinViewer = useRef(null);
+  const [containerSize, setContainerSize] = useState(0);
+
+  const updateContainerSize = () => {
+    if (containerRef.current) {
+      const width = containerRef.current.offsetWidth;
+      setContainerSize(width);
+    }
+  };
 
   useEffect(() => {
-    if (canvasRef.current && skinUrl) {
+    updateContainerSize();
+    const resizeObserver = new ResizeObserver(updateContainerSize);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (canvasRef.current && skinUrl && containerSize > 0) {
       if (skinViewer.current) {
         skinViewer.current.dispose();
       }
 
       skinViewer.current = new skinview3d.SkinViewer({
         canvas: canvasRef.current,
-        width: 500,
-        height: 500,
+        width: containerSize,
+        height: containerSize,
         skin: skinUrl,
       });
 
@@ -37,15 +56,35 @@ const SkinViewer3D = ({ skinUrl }) => {
         skinViewer.current = null;
       }
     };
-  }, [skinUrl]);
+  }, [skinUrl, containerSize]);
 
   return (
     <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>Interactive 3D Preview</CardTitle>
       </CardHeader>
-      <CardContent className="p-1 bg-black">
-        <canvas ref={canvasRef} />
+      <CardContent className="p-1 bg-black h-[calc(100%-2.5rem)]">
+        <div 
+          ref={containerRef} 
+          className="w-full h-full"
+          style={{ 
+            aspectRatio: '1 / 1',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <canvas 
+            ref={canvasRef}
+            width={containerSize}
+            height={containerSize}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'contain'
+            }}
+          />
+        </div>
       </CardContent>
     </Card>
   );
