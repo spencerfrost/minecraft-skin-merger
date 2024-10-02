@@ -38,7 +38,7 @@ describe('MinecraftSkinMerger', () => {
     expect(screen.getByRole('img')).toBeInTheDocument();
     expect(screen.getByAltText('Minecraft Skin Merger')).toBeInTheDocument();
 
-    expect(screen.getByText('Upload up to 4 skins, select the body parts, and then merge them together to create a new skin.')).toBeInTheDocument();
+    expect(screen.getByText('Add up to 4 skins, select the body parts, and then merge them together to create a new skin.')).toBeInTheDocument();
   });
 
   test('renders skin uploaders', () => {
