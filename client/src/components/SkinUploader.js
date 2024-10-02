@@ -16,38 +16,48 @@ const SkinUploader = ({
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSkinUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        onUpload(index, e.target.result);
-      };
-      reader.readAsDataURL(file);
+    try {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            onUpload(index, e.target.result);
+          } catch (error) {
+            console.error("Error in onUpload callback:", error);
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("FileReader error:", error);
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error("Error in handleSkinUpload:", error);
     }
   };
 
   const handleSearch = async (event) => {
-    event.preventDefault();
-    if (!searchTerm.trim()) return;
-
-    const domain =
-      process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
-    const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
-
     try {
+      event.preventDefault();
+      if (!searchTerm.trim()) return;
+
+      const domain =
+        process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
+      const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
+
       const response = await fetch(url);
       const blob = await response.blob();
       const skinUrl = URL.createObjectURL(blob);
 
-      convertBlobUrlToBase64(skinUrl)
-        .then((base64) => {
-          onUpload(index, base64);
-          URL.revokeObjectURL(skinUrl);
-        })
-        .catch((error) => {
-          console.error("Failed to convert blob to base64:", error);
-          alert("Error converting blob to base64");
-        });
+      try {
+        const base64 = await convertBlobUrlToBase64(skinUrl);
+        onUpload(index, base64);
+        URL.revokeObjectURL(skinUrl);
+      } catch (error) {
+        console.error("Failed to convert blob to base64:", error);
+        alert("Error converting blob to base64");
+      }
     } catch (error) {
       console.error("Failed to fetch skin:", error);
       alert("Error searching for skin");
@@ -55,7 +65,19 @@ const SkinUploader = ({
   };
 
   const handleDelete = () => {
-    onDelete(index);
+    try {
+      onDelete(index);
+    } catch (error) {
+      console.error("Error in handleDelete:", error);
+    }
+  };
+
+  const handleSearchInputChange = (event) => {
+    try {
+      setSearchTerm(event.target.value);
+    } catch (error) {
+      console.error("Error in handleSearchInputChange:", error);
+    }
   };
 
   function convertBlobUrlToBase64(blobUrl) {
@@ -96,7 +118,7 @@ const SkinUploader = ({
               type="text"
               placeholder="Search by name or UUID..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchInputChange}
             />
             <button
               type="submit"

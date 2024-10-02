@@ -58,7 +58,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
 
   return (
     <MinecraftCard className="h-full">
-      <div className="bg-black h-full flex justify-center items-center relative">
+      <div className="bg-black h-full flex justify-center items-center relative p-4">
         <div className="absolute inset-0 border-t-2 border-l-2 border-input-border-top" />
         <div className="absolute inset-0 border-b-2 border-r-2 border-input-border-bottom" />
         <canvas

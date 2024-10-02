@@ -16,6 +16,11 @@ const MinecraftSkinMergerPage = () => {
   const [mergedSkin, setMergedSkin] = useState(null);
   const [error, setError] = useState(null);
 
+  const handleError = (errorMessage) => {
+    setError(errorMessage);
+    console.error(errorMessage);
+  };
+
   const handleSkinUpload = (index, skin) => {
     const newSkins = [...skins];
     newSkins[index] = skin;
@@ -89,7 +94,8 @@ const MinecraftSkinMergerPage = () => {
           const blob = new Blob([byteArray], { type: "image/png" });
           formData.append("skins", blob, `skin${index}.png`);
         } catch (error) {
-          console.error(`Error processing skin at index ${index}:`, error);
+          handleError(`Error processing skin at index ${index}: ${error.message}`);
+          return;
         }
       }
     });
@@ -109,13 +115,11 @@ const MinecraftSkinMergerPage = () => {
       const data = await response.json();
       if (data.mergedSkinUrl) {
         setMergedSkin(data.mergedSkinUrl);
-        console.log("Merged skin set:", data.mergedSkinUrl);
       } else {
-        setError("Unexpected response format");
+        handleError("Unexpected response format");
       }
     } catch (error) {
-      setError(`Error merging skins: ${error.message}`);
-      console.error("Error during skin merge:", error);
+      handleError(`Error merging skins: ${error.message}`);
     }
   };
 
@@ -125,13 +129,12 @@ const MinecraftSkinMergerPage = () => {
       data-testid="minecraft-skin-merger"
     >
       <div className="container mx-auto max-w-6xl">
-        <header>
-          <img src={titleImage} alt="Minecraft Skin Merger" className="mx-auto" />
-          <p className="text-center mb-8 flex justify-center">
-            <span className="font-minecraft text-text-white relative px-2 py-1">
+        <header className="mb-8">
+          <img src={titleImage} alt="Minecraft Skin Merger" className="mx-auto max-w-full" />
+          <p className="text-center mt-4 flex justify-center px-4">
+            <span className="font-minecraft text-text-white relative px-2 py-1 text-sm sm:text-base">
               <span className="relative z-10">
-                Upload up to 4 skins, select the body parts, and then merge them
-                together to create a new skin.
+                Add up to 4 skins, select the body parts, and then merge them together to create a new skin.
               </span>
               <span
                 className="absolute inset-0 bg-black opacity-50"
@@ -144,9 +147,9 @@ const MinecraftSkinMergerPage = () => {
         <main>
           <section aria-label="Skin Upload and Preview Area">
             <h2 className="sr-only">Skin Uploaders and Preview</h2>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-1">
-                <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-1 order-2 lg:order-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
                   {skins.slice(0, 2).map((skin, index) => (
                     <SkinUploader
                       key={`skinUploader-${index}`}
@@ -162,7 +165,7 @@ const MinecraftSkinMergerPage = () => {
                 </div>
               </div>
 
-              <div className="col-span-1">
+              <div className="lg:col-span-1 order-1 lg:order-2">
                 <SkinPreview
                   skins={skins}
                   selectedParts={selectedParts}
@@ -171,8 +174,8 @@ const MinecraftSkinMergerPage = () => {
                 />
               </div>
 
-              <div className="col-span-1">
-                <div className="grid grid-cols-1 gap-4">
+              <div className="lg:col-span-1 order-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
                   {skins.slice(2, 4).map((skin, index) => (
                     <SkinUploader
                       key={`skinUploader-${index + 2}`}
@@ -190,27 +193,17 @@ const MinecraftSkinMergerPage = () => {
             </div>
           </section>
 
-          <section aria-label="Merge Controls">
+          <section aria-label="Merge Controls" className="mt-6">
             <h2 className="sr-only">Merge Skins</h2>
-            <div className="mt-4 flex justify-center">
+            <div className="flex justify-center">
               <Button onClick={mergeSkins} data-testid="merge-skins-button">
                 Merge Skins
               </Button>
             </div>
           </section>
 
-          {mergedSkin && (
-            <section aria-label="Merged Skin Result" className="mt-8">
-              <h2 className="sr-only">Merged Skin Viewer</h2>
-              <MergedSkinViewer
-                mergedSkin={mergedSkin}
-                data-testid="merged-skin-viewer"
-              />
-            </section>
-          )}
-
           {error && (
-            <section aria-label="Error Messages" className="mt-8">
+            <section aria-label="Error Messages" className="mt-4">
               <h2 className="sr-only">Error Information</h2>
               <Alert
                 variant="destructive"
@@ -223,10 +216,20 @@ const MinecraftSkinMergerPage = () => {
               </Alert>
             </section>
           )}
+
+          {mergedSkin && (
+            <section aria-label="Merged Skin Result" className="mt-8">
+              <h2 className="sr-only">Merged Skin Viewer</h2>
+              <MergedSkinViewer
+                mergedSkin={mergedSkin}
+                data-testid="merged-skin-viewer"
+              />
+            </section>
+          )}
         </main>
 
         <footer className="mt-8 text-center">
-          <p className="font-minecraft text-text-white">&copy; 2024 Minecraft Skin Merger. Created by Spencer Frost.</p>
+          <p className="font-minecraft text-text-white text-sm">&copy; 2024 Minecraft Skin Merger. Created by Spencer Frost.</p>
         </footer>
       </div>
     </div>
