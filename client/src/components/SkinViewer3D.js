@@ -76,6 +76,7 @@ const SkinViewer3D = ({ skinUrl }) => {
         >
           <canvas 
             ref={canvasRef}
+            data-testid="skin-viewer-canvas"
             width={containerSize}
             height={containerSize}
             style={{ 
