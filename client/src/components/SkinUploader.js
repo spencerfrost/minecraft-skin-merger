@@ -19,37 +19,26 @@ const SkinUploader = ({
     try {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            onUpload(index, e.target.result);
-          } catch (error) {
-            console.error("Error in onUpload callback:", error);
-          }
-        };
-        reader.onerror = (error) => {
-          console.error("FileReader error:", error);
-        };
-        reader.readAsDataURL(file);
+        readFile(file, index, onUpload);
       }
     } catch (error) {
       console.error("Error in handleSkinUpload:", error);
     }
   };
-
+  
   const handleSearch = async (event) => {
     try {
       event.preventDefault();
       if (!searchTerm.trim()) return;
-
+  
       const domain =
         process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
       const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
-
+  
       const response = await fetch(url);
       const blob = await response.blob();
       const skinUrl = URL.createObjectURL(blob);
-
+  
       try {
         const base64 = await convertBlobUrlToBase64(skinUrl);
         onUpload(index, base64);
@@ -62,6 +51,21 @@ const SkinUploader = ({
       console.error("Failed to fetch skin:", error);
       alert("Error searching for skin");
     }
+  };
+  
+  const readFile = (file, index, onUpload) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        onUpload(index, e.target.result);
+      } catch (error) {
+        console.error("Error in onUpload callback:", error);
+      }
+    };
+    reader.onerror = (error) => {
+      console.error("FileReader error:", error);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDelete = () => {
