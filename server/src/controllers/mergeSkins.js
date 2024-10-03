@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
-
 import config from "../config/config.js";
 
 const regions = {
@@ -40,7 +39,6 @@ export default async function mergeSkins(req, res) {
       return res.status(400).json({ error: "No skin files uploaded" });
     }
 
-    // Create a mapping between skin indices and uploaded files
     const skinMap = new Map();
     skins.forEach((skin, index) => {
       const originalIndex = parseInt(skin.originalname.replace(/\D/g, ''));
@@ -89,12 +87,12 @@ export default async function mergeSkins(req, res) {
       .toBuffer();
 
     const outputFileName = `merged-skin-${Date.now()}.png`;
-    const outputPath = path.join(config.PUBLIC_DIR, outputFileName);
+    const outputPath = path.join(config.PUBLIC_DIR, 'merged-skins', outputFileName);
 
-    await fs.mkdir(config.PUBLIC_DIR, { recursive: true });
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, mergedSkinBuffer);
 
-    const mergedSkinUrl = `/public/${outputFileName}`;
+    const mergedSkinUrl = `/public/merged-skins/${outputFileName}`;
     res.json({ mergedSkinUrl });
 
   } catch (error) {
