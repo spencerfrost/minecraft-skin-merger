@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as skinview3d from "skinview3d";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
@@ -7,35 +7,42 @@ const SkinViewer3D = ({ skinUrl }) => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const skinViewer = useRef(null);
-  const [containerSize, setContainerSize] = useState(0);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  const updateContainerSize = () => {
+  const updateContainerSize = useCallback(() => {
     if (containerRef.current) {
-      const width = containerRef.current.offsetWidth;
-      setContainerSize(width);
+      const { offsetWidth, offsetHeight } = containerRef.current;
+      setContainerSize({ width: offsetWidth, height: offsetHeight });
     }
-  };
+  }, []);
 
   useEffect(() => {
-    updateContainerSize();
+    updateContainerSize(); // Initial size calculation
     const resizeObserver = new ResizeObserver(updateContainerSize);
+    
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
 
-    return () => resizeObserver.disconnect();
-  }, []);
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [updateContainerSize]);
 
   useEffect(() => {
-    if (canvasRef.current && skinUrl && containerSize > 0) {
+    if (canvasRef.current && skinUrl && containerSize.width > 0 && containerSize.height > 0) {
       if (skinViewer.current) {
         skinViewer.current.dispose();
       }
 
+      const size = Math.min(containerSize.width, containerSize.height);
+
       skinViewer.current = new skinview3d.SkinViewer({
         canvas: canvasRef.current,
-        width: containerSize,
-        height: containerSize,
+        width: size,
+        height: size,
         skin: skinUrl,
       });
 
@@ -66,22 +73,17 @@ const SkinViewer3D = ({ skinUrl }) => {
       <CardContent className="p-1 bg-black h-[calc(100%-2.5rem)]">
         <div 
           ref={containerRef} 
-          className="w-full h-full"
-          style={{ 
-            aspectRatio: '1 / 1',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
+          className="w-full h-full flex items-center justify-center"
+          style={{ aspectRatio: '1 / 1' }}
         >
           <canvas 
             ref={canvasRef}
             data-testid="skin-viewer-canvas"
-            width={containerSize}
-            height={containerSize}
+            width={containerSize.width}
+            height={containerSize.height}
             style={{ 
-              width: '100%', 
-              height: '100%', 
+              maxWidth: '100%', 
+              maxHeight: '100%', 
               objectFit: 'contain'
             }}
           />
