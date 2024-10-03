@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Multer configuration
-const upload = multer({ dest: path.join(__dirname, "uploads/") });
+const upload = multer({ dest: path.join(config.PUBLIC_DIR, "uploads/") });
 
 // Routes
 router.post("/api/merge-skins", upload.array("skins", 4), mergeSkins);

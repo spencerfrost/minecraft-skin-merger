@@ -2,6 +2,7 @@ import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
 import sharp from 'sharp';
+import config from '../config/config.js';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -28,12 +29,12 @@ export async function processSkinUpload(req, res) {
     }
 
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.png`;
-    const filePath = path.join(__dirname, '..', '..', 'uploads', fileName);
+    const filePath = path.join(config.PUBLIC_DIR, 'uploads', fileName);
 
     // Process and save the image
     await sharp(req.file.buffer)
-      .png() // Convert to PNG
-      .resize(64, 64, { fit: 'fill' }) // Ensure correct size for Minecraft skin
+      .png()
+      .resize(64, 64, { fit: 'fill' })
       .toFile(filePath);
 
     res.json({ fileName });
@@ -44,28 +45,37 @@ export async function processSkinUpload(req, res) {
   }
 }
 
-// This function should be called when the server starts
 export function setupFileCleanup() {
-  setInterval(() => {
-    const directory = path.join(__dirname, '..', '..', 'uploads');
-    fs.readdir(directory, (err, files) => {
-      if (err) throw err;
+  const cleanupInterval = 3600000; // 1 hour
+  const fileAge = 7200000; // 2 hours
 
-      for (const file of files) {
-        fs.stat(path.join(directory, file), (err, stat) => {
-          if (err) throw err;
+  setInterval(async () => {
+    const uploadsDir = path.join(config.PUBLIC_DIR, 'uploads');
+    const mergedSkinsDir = path.join(config.PUBLIC_DIR, 'merged-skins');
 
-          const now = new Date().getTime();
-          const endTime = new Date(stat.ctime).getTime() + 3600000; // 1 hour
+    await cleanupDirectory(uploadsDir, fileAge);
+    await cleanupDirectory(mergedSkinsDir, fileAge);
+  }, cleanupInterval);
+}
 
-          if (now > endTime) {
-            fs.unlink(path.join(directory, file), (err) => {
-              if (err) throw err;
-              console.log(`Deleted ${file}`);
-            });
-          }
-        });
+async function cleanupDirectory(directory, maxAge) {
+  try {
+    const files = await fs.promises.readdir(directory);
+    const now = new Date().getTime();
+
+    for (const file of files) {
+      if (file === '.gitkeep') continue; // Skip .gitkeep file
+
+      const filePath = path.join(directory, file);
+      const stats = await fs.promises.stat(filePath);
+      const endTime = new Date(stats.ctime).getTime() + maxAge;
+
+      if (now > endTime) {
+        await fs.promises.unlink(filePath);
+        console.log(`Deleted ${file} from ${path.basename(directory)}`);
       }
-    });
-  }, 3600000); // Run every hour
+    }
+  } catch (error) {
+    console.error(`Error cleaning up ${path.basename(directory)}:`, error);
+  }
 }

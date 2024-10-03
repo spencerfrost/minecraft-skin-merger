@@ -12,7 +12,7 @@ const config = {
   PORT,
   isDev,
   DOMAIN,
-  PUBLIC_DIR: path.join(__dirname, 'public'),
+  PUBLIC_DIR: path.join(__dirname, '..', '..', 'public'),
   corsOptions: {
     origin: isDev ? 'http://localhost:3000' : 'https://mcskinmerger.mrspinn.ca',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
