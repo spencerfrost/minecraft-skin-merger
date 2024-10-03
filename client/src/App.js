@@ -1,4 +1,3 @@
-import React from 'react';
 import MinecraftSkinMerger from './pages/MinecraftSkinMerger';
 
 function App() {
