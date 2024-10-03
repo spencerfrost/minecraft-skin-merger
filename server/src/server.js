@@ -3,6 +3,7 @@ import express from "express";
 import path from "path";
 
 import config from "./config/config.js";
+import { setupFileCleanup } from "./controllers/fileUpload.js";
 import routes from "./routes/routes.js";
 
 const app = express();
@@ -24,6 +25,8 @@ app.use(
 
 // Use the routes
 app.use(routes);
+
+setupFileCleanup();
 
 // Start server
 app.listen(config.PORT, () => {

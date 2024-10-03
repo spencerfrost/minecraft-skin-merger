@@ -2,10 +2,10 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-
-import config from "../config/config.js";
 import fetchSkin from "../controllers/fetchSkin.js";
 import mergeSkins from "../controllers/mergeSkins.js";
+
+import config from "../config/config.js";
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
