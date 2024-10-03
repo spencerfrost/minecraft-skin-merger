@@ -22,7 +22,7 @@ const SkinTexture2D = ({ skinUrl }) => {
 
   if (imageError) {
     return (
-      <div className="border border-gray-300 p-2 bg-white text-red-500">
+      <div className="border gray-300 p-2 bg-white text-red-500">
         Error loading skin texture: {imageError}
       </div>
     );

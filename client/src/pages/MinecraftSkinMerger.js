@@ -1,131 +1,38 @@
-import { useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import titleImage from "../assets/optimized/title.png";
 import MergedSkinViewer from "../components/MergedSkinViewer";
 import SkinPreview from "../components/SkinPreview";
 import SkinUploader from "../components/SkinUploader";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
-import { skinParts } from "../constants/skinParts";
-
-const API_URL =
-  process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3002/api";
+import { useSkinManagement } from "../hooks/useSkinManagement";
+import { useSkinMerger } from "../hooks/useSkinMerger";
 
 const MinecraftSkinMergerPage = () => {
-  const [skins, setSkins] = useState([null, null, null, null]);
-  const [selectedParts, setSelectedParts] = useState({});
-  const [mergedSkin, setMergedSkin] = useState(null);
-  const [error, setError] = useState(null);
+  const { skins, selectedParts, handleSkinUpload, handleSkinDelete, handlePartSelection } = useSkinManagement();
+  const { mergedSkin, error, mergeSkins } = useSkinMerger();
 
-  const handleError = (errorMessage) => {
-    setError(errorMessage);
-    console.error(errorMessage);
-  };
+  const handleMergeSkins = useCallback(() => {
+    mergeSkins(skins, selectedParts);
+  }, [mergeSkins, skins, selectedParts]);
 
-  const handleSkinUpload = (index, skin) => {
-    const newSkins = [...skins];
-    newSkins[index] = skin;
-    setSkins(newSkins);
-
-    // If this is the first skin uploaded, set all parts to use this skin
-    if (index === 0 && !skins[0]) {
-      const newSelectedParts = {};
-      skinParts.forEach((part) => {
-        newSelectedParts[part] = 0;
-      });
-      setSelectedParts(newSelectedParts);
-    }
-  };
-
-  const handleSkinDelete = (index) => {
-    const newSkins = [...skins];
-    newSkins[index] = null;
-    setSkins(newSkins);
-
-    // If this is the last skin deleted, clear all selected parts
-    if (newSkins.every((skin) => skin === null)) {
-      setSelectedParts({});
-    } else {
-      // Update selectedParts to remove references to the deleted skin
-      const updatedSelectedParts = { ...selectedParts };
-      Object.keys(updatedSelectedParts).forEach((part) => {
-        if (updatedSelectedParts[part] === index) {
-          updatedSelectedParts[part] = null;
-        }
-      });
-      setSelectedParts(updatedSelectedParts);
-    }
-  };
-
-  const handlePartSelection = (part, skinIndex) => {
-    setSelectedParts((prevParts) => ({
-      ...prevParts,
-      [part]: skinIndex,
-    }));
-  };
-
-  useEffect(() => {
-    if (
-      skins.some((skin) => skin !== null) &&
-      Object.keys(selectedParts).length === 0
-    ) {
-      const firstSkinIndex = skins.findIndex((skin) => skin !== null);
-      const newSelectedParts = {};
-      skinParts.forEach((part) => {
-        newSelectedParts[part] = firstSkinIndex;
-      });
-      setSelectedParts(newSelectedParts);
-    }
-  }, [skins]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const mergeSkins = async () => {
-    setError(null);
-    const formData = new FormData();
-
-    skins.forEach((skin, index) => {
-      if (skin) {
-        try {
-          const base64Data = skin.split(",")[1];
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: "image/png" });
-          formData.append("skins", blob, `skin${index}.png`);
-        } catch (error) {
-          handleError(`Error processing skin at index ${index}: ${error.message}`);
-          return;
-        }
-      }
-    });
-
-    formData.append("selectedParts", JSON.stringify(selectedParts));
-
-    try {
-      const response = await fetch(`${API_URL}/merge-skins`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.mergedSkinUrl) {
-        setMergedSkin(data.mergedSkinUrl);
-      } else {
-        handleError("Unexpected response format");
-      }
-    } catch (error) {
-      handleError(`Error merging skins: ${error.message}`);
-    }
-  };
+  const skinUploaders = useMemo(() => (
+    skins.map((skin, index) => (
+      <SkinUploader
+        key={`skinUploader-${index}`}
+        index={index}
+        skin={skin}
+        onUpload={handleSkinUpload}
+        onDelete={handleSkinDelete}
+        selectedParts={selectedParts}
+        onPartSelection={handlePartSelection}
+      />
+    ))
+  ), [skins, selectedParts, handleSkinUpload, handleSkinDelete, handlePartSelection]);
 
   return (
     <div
-      className="min-h-screen bg-minecraft-bg bg-cover bg-center p-2 sm:p-4"
+      className="min-h-screen bg-minecraft bg-cover bg-center p-2 sm:p-4"
       data-testid="minecraft-skin-merger"
     >
       <div className="md:container mx-auto">
@@ -134,7 +41,7 @@ const MinecraftSkinMergerPage = () => {
           <p className="text-center mt-2 sm:mt-4 flex justify-center px-2 sm:px-4">
             <span className="font-minecraft text-text-white relative px-2 py-1 text-xs sm:text-sm md:text-base">
               <span className="relative z-10">
-              Add up to 4 skins, select the body parts, and then merge them together to create a new skin.
+                Add up to 4 skins, select the body parts, and then merge them together to create a new skin.
               </span>
               <span
                 className="absolute inset-0 bg-black opacity-50"
@@ -150,18 +57,7 @@ const MinecraftSkinMergerPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4">
               <div className="lg:col-span-1 order-2 lg:order-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-4">
-                  {skins.slice(0, 2).map((skin, index) => (
-                    <SkinUploader
-                      key={`skinUploader-${index}`}
-                      index={index}
-                      skin={skin}
-                      onUpload={handleSkinUpload}
-                      onDelete={handleSkinDelete}
-                      selectedParts={selectedParts}
-                      onPartSelection={handlePartSelection}
-                      data-testid={`skin-uploader-${index}`}
-                    />
-                  ))}
+                  {skinUploaders.slice(0, 2)}
                 </div>
               </div>
 
@@ -176,18 +72,7 @@ const MinecraftSkinMergerPage = () => {
 
               <div className="lg:col-span-1 order-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-4">
-                  {skins.slice(2, 4).map((skin, index) => (
-                    <SkinUploader
-                      key={`skinUploader-${index + 2}`}
-                      index={index + 2}
-                      skin={skin}
-                      onUpload={handleSkinUpload}
-                      onDelete={handleSkinDelete}
-                      selectedParts={selectedParts}
-                      onPartSelection={handlePartSelection}
-                      data-testid={`skin-uploader-${index + 2}`}
-                    />
-                  ))}
+                  {skinUploaders.slice(2, 4)}
                 </div>
               </div>
             </div>
@@ -196,7 +81,7 @@ const MinecraftSkinMergerPage = () => {
           <section aria-label="Merge Controls" className="mt-4 sm:mt-6">
             <h2 className="sr-only">Merge Skins</h2>
             <div className="flex justify-center">
-              <Button onClick={mergeSkins} data-testid="merge-skins-button">
+              <Button onClick={handleMergeSkins} data-testid="merge-skins-button">
                 Merge Skins
               </Button>
             </div>

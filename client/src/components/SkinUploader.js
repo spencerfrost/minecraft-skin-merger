@@ -1,7 +1,11 @@
-import { Search, Upload, X } from "lucide-react";
+import { Upload } from "lucide-react";
 import PropTypes from "prop-types";
 import { useState } from "react";
+
 import PartSelector from "./PartSelector";
+
+import { ReactComponent as Search } from "../assets/search.svg";
+import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 
@@ -104,15 +108,13 @@ const SkinUploader = ({
           Skin {index + 1}
         </CardTitle>
         {skin && (
-          <button
+          <Button
             onClick={handleDelete}
-            className="minecraft-btn"
             aria-label="Delete skin"
+            size="icon"
           >
-            <span className="title">
-              <X className="w-4 h-4" />
-            </span>
-          </button>
+            X
+          </Button>
         )}
       </CardHeader>
       <CardContent className="p-2">
@@ -124,15 +126,14 @@ const SkinUploader = ({
               value={searchTerm}
               onChange={handleSearchInputChange}
             />
-            <button
+            <Button
               type="submit"
-              className="minecraft-btn p-2"
+              size="icon-lg"
               aria-label="Search skin"
+              className="ml-2"
             >
-              <span className="title">
-                <Search className="w-4 h-4" />
-              </span>
-            </button>
+              <Search className="h-4 w-4" />
+            </Button>
           </div>
         </form>
         {skin ? (
