@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
-import sanitizeHtml from 'sanitize-html';
-import validator from 'validator';
+import validator from 'validator/es';
 
 export default async function fetchSkin(req, res) {
     const { name } = req.params;
@@ -41,6 +40,6 @@ export default async function fetchSkin(req, res) {
         res.send(imgBuffer);
     } catch (error) {
         console.error('Failed to fetch skin:', error);
-        res.status(500).json({ error: sanitizeHtml('Failed to fetch skin') });
+        res.status(500).json({ error: 'Failed to fetch skin' });
     }
 }
