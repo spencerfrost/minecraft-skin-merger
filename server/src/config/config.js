@@ -1,23 +1,29 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Constants
+const PROD_DOMAIN = 'https://mcskinmerger.mrspinn.ca';
+const DEFAULT_PORT = 3002;
 
-const PORT = process.env.PORT || 3002;
+// Environment
 const isDev = process.env.NODE_ENV !== 'production';
-const DOMAIN = isDev ? `http://localhost:${PORT}` : 'https://mcskinmerger.mrspinn.ca';
+const PORT = process.env.PORT || DEFAULT_PORT;
 
-const config = {
-  PORT,
-  isDev,
-  DOMAIN,
-  PUBLIC_DIR: path.join(__dirname, '..', '..', 'public'),
-  corsOptions: {
-    origin: isDev ? 'http://localhost:3000' : 'https://mcskinmerger.mrspinn.ca',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }
+// File paths
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
+
+// CORS
+const corsOptions = {
+  origin: isDev ? /^http:\/\/localhost:\d+$/ : PROD_DOMAIN,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-export default config;
+export default {
+  PORT,
+  isDev,
+  DOMAIN: isDev ? `http://localhost:${PORT}` : PROD_DOMAIN,
+  PUBLIC_DIR,
+  corsOptions
+};

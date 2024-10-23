@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import validator from 'validator/es';
+import validator from 'validator';
 
 export default async function fetchSkin(req, res) {
     const { name } = req.params;
