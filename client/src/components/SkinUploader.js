@@ -18,6 +18,7 @@ const SkinUploader = ({
   onPartSelection,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState(null);
 
   const handleSkinUpload = (event) => {
     try {
@@ -27,6 +28,7 @@ const SkinUploader = ({
       }
     } catch (error) {
       console.error("Error in handleSkinUpload:", error);
+      error.message = "Error uploading skin. Please try again.";
     }
   };
   
@@ -49,11 +51,11 @@ const SkinUploader = ({
         URL.revokeObjectURL(skinUrl);
       } catch (error) {
         console.error("Failed to convert blob to base64:", error);
-        alert("Error converting blob to base64");
+        error.message = "Error converting blob to base64";
       }
     } catch (error) {
-      console.error("Failed to fetch skin:", error);
-      alert("Error searching for skin");
+      console.error("Error in handleSearch:", error);
+      error.message = "Error searching for skin. Please try again.";
     }
   };
   
@@ -134,6 +136,10 @@ const SkinUploader = ({
             >
               <Search className="h-4 w-4" />
             </Button>
+          </div>
+          {/* Error message from fetchskin */}
+          <div className="text-red-600 text-sm mt-2">
+            {error && error.message}
           </div>
         </form>
         {skin ? (
