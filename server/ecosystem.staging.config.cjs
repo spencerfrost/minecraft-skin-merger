@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'MCSkinMerger-Staging',
-    script: 'dist/server.mjs',  // Note: Updated to .mjs to match rollup output
+    script: 'server.mjs',  // Note: Updated to .mjs to match rollup output
     env: {
       NODE_ENV: 'production',
       PORT: 3003
