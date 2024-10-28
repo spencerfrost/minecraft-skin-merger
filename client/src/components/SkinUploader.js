@@ -18,7 +18,7 @@ const SkinUploader = ({
   onPartSelection,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
 
   const handleSkinUpload = (event) => {
     try {
