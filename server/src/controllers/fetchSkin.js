@@ -5,7 +5,7 @@ export default async function fetchSkin(req, res) {
     const { name } = req.params;
 
     // Input validation
-    if (!name || !validator.isAlphanumeric(name) || name.length > 36) {
+    if (!name || !validator.isAlphanumeric(name, 'en-US', {allow_underscore: true}) || name.length > 36) {
         return res.status(400).json({ error: 'Invalid username or UUID' });
     }
 
