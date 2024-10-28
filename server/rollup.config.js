@@ -5,7 +5,7 @@ export default {
   input: "src/server.js",
   output: {
     file: "dist/server.mjs",
-    format: "esm", // Output as ES module
+    format: "esm",
     sourcemap: true,
   },
   plugins: [
@@ -16,5 +16,17 @@ export default {
       presets: [["@babel/preset-env", { targets: { node: "20" } }]],
     }),
   ],
-  external: ["cors", "express", "multer", "node-fetch", "sharp"],
+  external: [
+    'cors', 
+    'express', 
+    'multer', 
+    'node-fetch', 
+    'sharp',
+    'validator',
+    'sanitize-html',
+    'path',
+    'fs/promises',
+    'url',
+    'fs'
+  ],
 };
