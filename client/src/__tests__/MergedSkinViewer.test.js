@@ -22,32 +22,61 @@ jest.mock('../components/ui/button', () => ({
 
 describe('MergedSkinViewer', () => {
   const mockMergedSkin = '/public/merged-skin-123456789.png';
+  let originalImage;
+
+  beforeAll(() => {
+    // 1. Mock the Image prototype so that setting .src fires .onload immediately
+    originalImage = global.Image;
+    global.Image = class {
+      constructor() {
+        setTimeout(() => {
+          if (this.onload) this.onload();
+        }, 0);
+      }
+      set src(url) {
+        this._src = url;
+      }
+      get src() {
+        return this._src;
+      }
+    };
+  });
+
+  afterAll(() => {
+    // Restore original Image constructor
+    global.Image = originalImage;
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders SkinTexture2D and SkinViewer3D components', () => {
+  it('renders SkinTexture2D and SkinViewer3D components', async () => {
     render(<MergedSkinViewer mergedSkin={mockMergedSkin} />);
     
-    expect(screen.getByTestId('mocked-2d-viewer')).toBeInTheDocument();
-    expect(screen.getByTestId('mocked-3d-viewer')).toBeInTheDocument();
-    expect(screen.getByTestId('mocked-button')).toBeInTheDocument();
+    // 2. Use findByTestId to wait for the macro-task/setTimeout to resolve the state change
+    expect(await screen.findByTestId('mocked-2d-viewer')).toBeInTheDocument();
+    expect(await screen.findByTestId('mocked-3d-viewer')).toBeInTheDocument();
+    expect(await screen.findByTestId('mocked-button')).toBeInTheDocument();
   });
 
-  it('passes correct skin URL to components', () => {
+  it('passes correct skin URL to components', async () => {
     process.env.NODE_ENV = 'development';
     render(<MergedSkinViewer mergedSkin={mockMergedSkin} />);
     
     const expectedUrl = `http://localhost:3002${mockMergedSkin}`;
-    expect(screen.getByTestId('mocked-2d-viewer')).toHaveAttribute('skinUrl', expectedUrl);
-    expect(screen.getByTestId('mocked-3d-viewer')).toHaveAttribute('skinUrl', expectedUrl);
+    const viewer2D = await screen.findByTestId('mocked-2d-viewer');
+    const viewer3D = await screen.findByTestId('mocked-3d-viewer');
+
+    expect(viewer2D).toHaveAttribute('skinUrl', expectedUrl);
+    expect(viewer3D).toHaveAttribute('skinUrl', expectedUrl);
   });
 
-  it('uses correct skin URL for production environment', () => {
+  it('uses correct skin URL for production environment', async () => {
     process.env.NODE_ENV = 'production';
     render(<MergedSkinViewer mergedSkin={mockMergedSkin} />);
     
-    expect(screen.getByTestId('mocked-3d-viewer')).toHaveAttribute('skinUrl', mockMergedSkin);
+    const viewer3D = await screen.findByTestId('mocked-3d-viewer');
+    expect(viewer3D).toHaveAttribute('skinUrl', mockMergedSkin);
   });
 });
