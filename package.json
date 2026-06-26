@@ -9,7 +9,8 @@
     "install-all": "npm install && npm install --prefix client && npm install --prefix server",
     "ci-all": "npm ci && npm ci --prefix client && npm ci --prefix server",
     "build": "npm run build-all",
-    "build-all": "npm run build --prefix client && npm run build --prefix server"
+    "build-all": "npm run build --prefix client && npm run build --prefix server",
+    "deploy": "./deploy.sh"
   },
   "keywords": [
     "minecraft",
