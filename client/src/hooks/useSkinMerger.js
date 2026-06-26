@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { getApiBaseUrl } from '../lib/utils';
 
-const API_URL = process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3002/api";
+const API_URL = getApiBaseUrl();
 
 export const useSkinMerger = () => {
   const [mergedSkin, setMergedSkin] = useState(null);

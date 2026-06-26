@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { getServerOrigin } from '../lib/utils';
 import SkinTexture2D from './SkinTexture2D';
 import SkinViewer3D from './SkinViewer3D';
 import { Button } from './ui/button';
@@ -9,12 +10,11 @@ import { Card, CardContent } from './ui/card';
 const MergedSkinViewer = ({ mergedSkin }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const serverOrigin = getServerOrigin();
 
   const fullSkinUrl = mergedSkin.startsWith('http')
     ? mergedSkin
-    : `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3002'}${mergedSkin}`;
-    
-  const DOMAIN = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3002';
+    : `${serverOrigin}${mergedSkin}`;
 
   useEffect(() => {
     setIsLoading(true);
@@ -39,7 +39,7 @@ const MergedSkinViewer = ({ mergedSkin }) => {
 
   const handleDownload = () => {
     const filename = mergedSkin.split('/').pop();
-    const downloadUrl = `${DOMAIN}/download/${filename}`;
+    const downloadUrl = `${serverOrigin}/download/${filename}`;
    
     const link = document.createElement('a');
     link.href = downloadUrl;

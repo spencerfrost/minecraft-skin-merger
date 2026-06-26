@@ -5,6 +5,7 @@ import { useState } from "react";
 import PartSelector from "./PartSelector";
 
 import { ReactComponent as Search } from "../assets/search.svg";
+import { getServerOrigin } from "../lib/utils";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
@@ -18,17 +19,19 @@ const SkinUploader = ({
   onPartSelection,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [error] = useState(null);
+  const [error, setError] = useState(null);
+  const serverOrigin = getServerOrigin();
 
   const handleSkinUpload = (event) => {
     try {
       const file = event.target.files[0];
       if (file) {
+        setError(null);
         readFile(file, index, onUpload);
       }
     } catch (error) {
       console.error("Error in handleSkinUpload:", error);
-      error.message = "Error uploading skin. Please try again.";
+      setError("Error uploading skin. Please try again.");
     }
   };
   
@@ -36,12 +39,14 @@ const SkinUploader = ({
     try {
       event.preventDefault();
       if (!searchTerm.trim()) return;
+      setError(null);
   
-      const domain =
-        process.env.NODE_ENV === "development" ? "http://localhost:3002" : "";
-      const url = `${domain}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
+      const url = `${serverOrigin}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
   
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Unable to fetch skin (${response.status})`);
+      }
       const blob = await response.blob();
       const skinUrl = URL.createObjectURL(blob);
   
@@ -51,11 +56,11 @@ const SkinUploader = ({
         URL.revokeObjectURL(skinUrl);
       } catch (error) {
         console.error("Failed to convert blob to base64:", error);
-        error.message = "Error converting blob to base64";
+        setError("Error converting fetched skin data.");
       }
     } catch (error) {
       console.error("Error in handleSearch:", error);
-      error.message = "Error searching for skin. Please try again.";
+      setError("Error searching for skin. Please try again.");
     }
   };
   
@@ -66,10 +71,12 @@ const SkinUploader = ({
         onUpload(index, e.target.result);
       } catch (error) {
         console.error("Error in onUpload callback:", error);
+        setError("Error processing uploaded skin.");
       }
     };
     reader.onerror = (error) => {
       console.error("FileReader error:", error);
+      setError("Unable to read the selected file.");
     };
     reader.readAsDataURL(file);
   };
@@ -85,6 +92,9 @@ const SkinUploader = ({
   const handleSearchInputChange = (event) => {
     try {
       setSearchTerm(event.target.value);
+      if (error) {
+        setError(null);
+      }
     } catch (error) {
       console.error("Error in handleSearchInputChange:", error);
     }
@@ -139,7 +149,7 @@ const SkinUploader = ({
           </div>
           {/* Error message from fetchskin */}
           <div className="text-red-600 text-sm mt-2">
-            {error && error.message}
+            {error}
           </div>
         </form>
         {skin ? (
