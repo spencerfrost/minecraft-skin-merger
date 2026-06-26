@@ -8,7 +8,7 @@ export default async function fetchSkin(req, res) {
     return res.status(400).json({ error: "Invalid username or UUID" });
   }
 
-  const url = `https://skins.danielraybone.com/v1/skin/${encodeURIComponent(
+  const url = `https://mineskin.eu/skin/${encodeURIComponent(
     name
   )}`;
 
