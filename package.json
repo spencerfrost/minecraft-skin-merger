@@ -2,11 +2,13 @@
   "name": "minecraft-skin-merger",
   "version": "1.0.0",
   "description": "A web application for merging Minecraft skins",
-  "main": "server/server.js",
+  "main": "server/src/server.js",
   "scripts": {
     "dev": "concurrently \"npm run start --prefix client\" \"npm run dev --prefix server\"",
+    "start": "npm run start --prefix server",
     "install-all": "npm install && npm install --prefix client && npm install --prefix server",
     "ci-all": "npm ci && npm ci --prefix client && npm ci --prefix server",
+    "build": "npm run build-all",
     "build-all": "npm run build --prefix client && npm run build --prefix server"
   },
   "keywords": [
