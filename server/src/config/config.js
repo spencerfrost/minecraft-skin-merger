@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 const isDev = process.env.NODE_ENV !== "production";
 
 const PROD_DOMAIN = "https://mcskinmerger.mrspinn.ca";
-const DEFAULT_PORT = isDev ? 3020 : 3220;
+const DEFAULT_PORT = isDev ? 3002 : 3220;
 const PORT = process.env.PORT || DEFAULT_PORT;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
