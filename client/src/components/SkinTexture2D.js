@@ -1,6 +1,6 @@
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 const SkinTexture2D = ({ skinUrl }) => {
   const [imageError, setImageError] = useState(null);
@@ -39,7 +39,7 @@ const SkinTexture2D = ({ skinUrl }) => {
           alt="Skin Texture"
           className={`w-full h-auto`}
           crossOrigin="anonymous"
-          style={{ imageRendering: "pixelated" }}
+          style={{ imageRendering: 'pixelated' }}
         />
       </CardContent>
     </Card>

@@ -14,15 +14,15 @@ export const useSkinMerger = () => {
     skins.forEach((skin, index) => {
       if (skin) {
         try {
-          const base64Data = skin.split(",")[1];
+          const base64Data = skin.split(',')[1];
           const byteCharacters = atob(base64Data);
           const byteNumbers = new Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
             byteNumbers[i] = byteCharacters.charCodeAt(i);
           }
           const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: "image/png" });
-          formData.append("skins", blob, `skin${index}.png`);
+          const blob = new Blob([byteArray], { type: 'image/png' });
+          formData.append('skins', blob, `skin${index}.png`);
         } catch (error) {
           setError(`Error processing skin at index ${index}: ${error.message}`);
           return;
@@ -30,11 +30,11 @@ export const useSkinMerger = () => {
       }
     });
 
-    formData.append("selectedParts", JSON.stringify(selectedParts));
+    formData.append('selectedParts', JSON.stringify(selectedParts));
 
     try {
       const response = await fetch(`${API_URL}/merge-skins`, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       });
 
@@ -46,7 +46,7 @@ export const useSkinMerger = () => {
       if (data.mergedSkinUrl) {
         setMergedSkin(data.mergedSkinUrl);
       } else {
-        setError("Unexpected response format");
+        setError('Unexpected response format');
       }
     } catch (error) {
       setError(`Error merging skins: ${error.message}`);

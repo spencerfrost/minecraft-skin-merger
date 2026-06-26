@@ -1,5 +1,5 @@
 import React from 'react';
-import SkinPreview from "../../../components/SkinPreview";
+import SkinPreview from '../../../components/SkinPreview';
 
 const SkinPreviewSection = ({ skins, selectedParts }) => (
   <div className="lg:col-span-1 order-1 lg:order-2">

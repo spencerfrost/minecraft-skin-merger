@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from "../../../components/ui/button";
+import { Button } from '../../../components/ui/button';
 
 const MergeControlsSection = ({ onMerge }) => (
   <section aria-label="Merge Controls" className="mt-4 sm:mt-6">

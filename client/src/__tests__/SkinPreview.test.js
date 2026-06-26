@@ -11,14 +11,14 @@ describe('SkinPreview', () => {
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==',
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==',
     null,
-    null
+    null,
   ];
 
   const mockSelectedParts = {
     Head: 0,
     Body: 1,
     'Left Arm': 0,
-    'Right Arm': 1
+    'Right Arm': 1,
   };
 
   beforeEach(() => {
@@ -61,7 +61,9 @@ describe('SkinPreview', () => {
   test('sets imageSmoothingEnabled to false', () => {
     render(<SkinPreview skins={mockSkins} selectedParts={mockSelectedParts} />);
     expect(mockGetContext).toHaveBeenCalledWith('2d');
-    expect(mockGetContext.mock.results[0].value.imageSmoothingEnabled).toBe(false);
+    expect(mockGetContext.mock.results[0].value.imageSmoothingEnabled).toBe(
+      false
+    );
   });
 
   test('clears the canvas', () => {

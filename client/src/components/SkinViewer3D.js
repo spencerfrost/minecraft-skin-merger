@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
-import { useCallback, useEffect, useRef, useState } from "react";
-import * as skinview3d from "skinview3d";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import PropTypes from 'prop-types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import * as skinview3d from 'skinview3d';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 const SkinViewer3D = ({ skinUrl }) => {
   const canvasRef = useRef(null);
@@ -19,7 +19,7 @@ const SkinViewer3D = ({ skinUrl }) => {
   useEffect(() => {
     updateContainerSize(); // Initial size calculation
     const resizeObserver = new ResizeObserver(updateContainerSize);
-    
+
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
@@ -32,7 +32,12 @@ const SkinViewer3D = ({ skinUrl }) => {
   }, [updateContainerSize]);
 
   useEffect(() => {
-    if (canvasRef.current && skinUrl && containerSize.width > 0 && containerSize.height > 0) {
+    if (
+      canvasRef.current &&
+      skinUrl &&
+      containerSize.width > 0 &&
+      containerSize.height > 0
+    ) {
       if (skinViewer.current) {
         skinViewer.current.dispose();
       }
@@ -54,7 +59,7 @@ const SkinViewer3D = ({ skinUrl }) => {
       skinViewer.current.zoom = 0.9;
       skinViewer.current.globalLight.intensity = 2.8;
       skinViewer.current.cameraLight.intensity = 2;
-      skinViewer.current.background = "#000000";
+      skinViewer.current.background = '#000000';
     }
 
     return () => {
@@ -71,20 +76,20 @@ const SkinViewer3D = ({ skinUrl }) => {
         <CardTitle>Interactive 3D Preview</CardTitle>
       </CardHeader>
       <CardContent className="p-1 bg-black h-[calc(100%-2.5rem)]">
-        <div 
-          ref={containerRef} 
+        <div
+          ref={containerRef}
           className="w-full h-full flex items-center justify-center"
           style={{ aspectRatio: '1 / 1' }}
         >
-          <canvas 
+          <canvas
             ref={canvasRef}
             data-testid="skin-viewer-canvas"
             width={containerSize.width}
             height={containerSize.height}
-            style={{ 
-              maxWidth: '100%', 
-              maxHeight: '100%', 
-              objectFit: 'contain'
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
             }}
           />
         </div>

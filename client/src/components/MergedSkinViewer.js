@@ -40,7 +40,7 @@ const MergedSkinViewer = ({ mergedSkin }) => {
   const handleDownload = () => {
     const filename = mergedSkin.split('/').pop();
     const downloadUrl = `${serverOrigin}/download/${filename}`;
-   
+
     const link = document.createElement('a');
     link.href = downloadUrl;
     link.download = filename;
@@ -75,9 +75,7 @@ const MergedSkinViewer = ({ mergedSkin }) => {
         </div>
       </div>
       <div className="mt-4 flex justify-center">
-        <Button onClick={handleDownload}>
-          Download Merged Skin
-        </Button>
+        <Button onClick={handleDownload}>Download Merged Skin</Button>
       </div>
     </div>
   );

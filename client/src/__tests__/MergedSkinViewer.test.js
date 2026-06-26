@@ -53,7 +53,7 @@ describe('MergedSkinViewer', () => {
 
   it('renders SkinTexture2D and SkinViewer3D components', async () => {
     render(<MergedSkinViewer mergedSkin={mockMergedSkin} />);
-    
+
     // 2. Use findByTestId to wait for the macro-task/setTimeout to resolve the state change
     expect(await screen.findByTestId('mocked-2d-viewer')).toBeInTheDocument();
     expect(await screen.findByTestId('mocked-3d-viewer')).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('MergedSkinViewer', () => {
   it('passes correct skin URL to components', async () => {
     process.env.NODE_ENV = 'development';
     render(<MergedSkinViewer mergedSkin={mockMergedSkin} />);
-    
+
     const expectedUrl = `http://localhost:3002${mockMergedSkin}`;
     const viewer2D = await screen.findByTestId('mocked-2d-viewer');
     const viewer3D = await screen.findByTestId('mocked-3d-viewer');
@@ -75,7 +75,7 @@ describe('MergedSkinViewer', () => {
   it('uses correct skin URL for production environment', async () => {
     process.env.NODE_ENV = 'production';
     render(<MergedSkinViewer mergedSkin={mockMergedSkin} />);
-    
+
     const viewer3D = await screen.findByTestId('mocked-3d-viewer');
     expect(viewer3D).toHaveAttribute('skinUrl', mockMergedSkin);
   });

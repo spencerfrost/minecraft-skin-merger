@@ -3,10 +3,9 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import SkinViewer3D from '../components/SkinViewer3D';
 
-
 jest.mock('skinview3d', () => ({
   SkinViewer: jest.fn(),
-  WalkingAnimation: jest.fn()
+  WalkingAnimation: jest.fn(),
 }));
 
 class ResizeObserver {
@@ -16,7 +15,9 @@ class ResizeObserver {
   observe(element) {
     // Simulate a resize after a short delay
     setTimeout(() => {
-      this.callback([{ target: element, contentRect: { width: 500, height: 500 } }]);
+      this.callback([
+        { target: element, contentRect: { width: 500, height: 500 } },
+      ]);
     }, 0);
   }
   unobserve() {}
@@ -45,12 +46,12 @@ describe('SkinViewer3D', () => {
   test('updates when skin URL changes', () => {
     const { rerender } = render(<SkinViewer3D skinUrl={mockSkinUrl} />);
     const initialCanvas = screen.getByTestId('skin-viewer-canvas');
-    
+
     const newSkinUrl = 'http://example.com/new-skin.png';
     rerender(<SkinViewer3D skinUrl={newSkinUrl} />);
     const updatedCanvas = screen.getByTestId('skin-viewer-canvas');
-    
-    expect(updatedCanvas).toBe(initialCanvas);  // The canvas element should be the same
+
+    expect(updatedCanvas).toBe(initialCanvas); // The canvas element should be the same
     // We can't easily test that the skin actually changed, but we can verify the component didn't crash
   });
 });
@@ -58,8 +59,7 @@ describe('SkinViewer3D', () => {
 // describe('SkinViewer3D', () => {
 //   const mockSkinUrl = 'http://example.com/skin.png';
 //   let mockDispose;
-  
-  
+
 //   beforeEach(() => {
 //     jest.clearAllMocks();
 //     mockDispose = jest.fn();
@@ -89,12 +89,12 @@ describe('SkinViewer3D', () => {
 //     await act(async () => {
 //       render(<SkinViewer3D skinUrl={mockSkinUrl} />);
 //     });
-  
+
 //     // Wait for the next tick of the event loop
 //     await act(async () => {
 //       await new Promise(resolve => setTimeout(resolve, 0));
 //     });
-  
+
 //     expect(skinview3d.SkinViewer).toHaveBeenCalledWith(
 //       expect.objectContaining({
 //         canvas: expect.any(HTMLCanvasElement),
@@ -103,7 +103,7 @@ describe('SkinViewer3D', () => {
 //         skin: mockSkinUrl
 //       })
 //     );
-  
+
 //     const calledWith = skinview3d.SkinViewer.mock.calls[0][0];
 //     expect(typeof calledWith.width).toBe('number');
 //     expect(calledWith.width).toBeGreaterThan(0);
@@ -133,11 +133,11 @@ describe('SkinViewer3D', () => {
 
 //   test('disposes SkinViewer on unmount', () => {
 //     const { unmount } = render(<SkinViewer3D skinUrl={mockSkinUrl} />);
-    
+
 //     act(() => {
 //       unmount();
 //     });
-    
+
 //     expect(mockDispose).toHaveBeenCalled();
 //   });
 

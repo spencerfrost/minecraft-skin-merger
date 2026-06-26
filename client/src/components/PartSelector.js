@@ -1,15 +1,15 @@
-import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
-import { skinCoords } from "../constants/skinParts";
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
+import { skinCoords } from '../constants/skinParts';
 
 const isOverlayPart = (part) =>
   [
-    "Hat",
-    "Jacket",
-    "Left Sleeve",
-    "Right Sleeve",
-    "Left Pant",
-    "Right Pant",
+    'Hat',
+    'Jacket',
+    'Left Sleeve',
+    'Right Sleeve',
+    'Left Pant',
+    'Right Pant',
   ].includes(part);
 
 const PartSelector = ({
@@ -23,9 +23,9 @@ const PartSelector = ({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     const img = new Image();
-    img.crossOrigin = "Anonymous";
+    img.crossOrigin = 'Anonymous';
     img.src = skinUrl;
 
     img.onload = () => {
@@ -68,9 +68,9 @@ const PartSelector = ({
 
   const drawSelectionGlow = (ctx, part, offsetX) => {
     ctx.save();
-    ctx.strokeStyle = "orange";
+    ctx.strokeStyle = 'orange';
     ctx.lineWidth = 2;
-    ctx.shadowColor = "orange";
+    ctx.shadowColor = 'orange';
     ctx.shadowBlur = 10;
     ctx.strokeRect(offsetX + part.x, part.y, part.w, part.h);
     ctx.restore();
@@ -78,7 +78,7 @@ const PartSelector = ({
 
   const drawHoverEffect = (ctx, part, offsetX) => {
     ctx.save();
-    ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.fillRect(offsetX + part.x, part.y, part.w, part.h);
     ctx.restore();
   };

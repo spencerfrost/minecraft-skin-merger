@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
-import { useEffect, useRef } from "react";
-import { skinRegions } from "../constants/skinParts";
-import { Card } from "./ui/card";
+import PropTypes from 'prop-types';
+import { useEffect, useRef } from 'react';
+import { skinRegions } from '../constants/skinParts';
+import { Card } from './ui/card';
 
 const SkinPreview = ({ skins, selectedParts }) => {
   const canvasRef = useRef(null);
@@ -23,7 +23,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
     const skinImages = skins.map((skinUrl) => {
       if (!skinUrl) return null;
       const img = new Image();
-      img.crossOrigin = "Anonymous";
+      img.crossOrigin = 'Anonymous';
       img.src = skinUrl;
       return img;
     });
@@ -40,10 +40,10 @@ const SkinPreview = ({ skins, selectedParts }) => {
           const { x, y, w, h, dx, dy, dw, dh } = skinRegions[part];
 
           // Create a temporary canvas for pixel-perfect scaling
-          const tempCanvas = document.createElement("canvas");
+          const tempCanvas = document.createElement('canvas');
           tempCanvas.width = w;
           tempCanvas.height = h;
-          const tempCtx = tempCanvas.getContext("2d");
+          const tempCtx = tempCanvas.getContext('2d');
           tempCtx.imageSmoothingEnabled = false;
 
           // Draw the part on the temporary canvas
@@ -65,7 +65,7 @@ const SkinPreview = ({ skins, selectedParts }) => {
           ref={canvasRef}
           width={192}
           height={384}
-          style={{ imageRendering: "pixelated" }}
+          style={{ imageRendering: 'pixelated' }}
           data-testid="skin-preview-canvas"
         />
       </div>

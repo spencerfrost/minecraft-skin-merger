@@ -1,14 +1,14 @@
-import { Upload } from "lucide-react";
-import PropTypes from "prop-types";
-import { useState } from "react";
+import { Upload } from 'lucide-react';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-import PartSelector from "./PartSelector";
+import PartSelector from './PartSelector';
 
-import { ReactComponent as Search } from "../assets/search.svg";
-import { getServerOrigin } from "../lib/utils";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
+import { ReactComponent as Search } from '../assets/search.svg';
+import { getServerOrigin } from '../lib/utils';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Input } from './ui/input';
 
 const SkinUploader = ({
   index,
@@ -18,7 +18,7 @@ const SkinUploader = ({
   selectedParts,
   onPartSelection,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const serverOrigin = getServerOrigin();
 
@@ -30,53 +30,53 @@ const SkinUploader = ({
         readFile(file, index, onUpload);
       }
     } catch (error) {
-      console.error("Error in handleSkinUpload:", error);
-      setError("Error uploading skin. Please try again.");
+      console.error('Error in handleSkinUpload:', error);
+      setError('Error uploading skin. Please try again.');
     }
   };
-  
+
   const handleSearch = async (event) => {
     try {
       event.preventDefault();
       if (!searchTerm.trim()) return;
       setError(null);
-  
+
       const url = `${serverOrigin}/api/fetch-skin/${encodeURIComponent(searchTerm)}`;
-  
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Unable to fetch skin (${response.status})`);
       }
       const blob = await response.blob();
       const skinUrl = URL.createObjectURL(blob);
-  
+
       try {
         const base64 = await convertBlobUrlToBase64(skinUrl);
         onUpload(index, base64);
         URL.revokeObjectURL(skinUrl);
       } catch (error) {
-        console.error("Failed to convert blob to base64:", error);
-        setError("Error converting fetched skin data.");
+        console.error('Failed to convert blob to base64:', error);
+        setError('Error converting fetched skin data.');
       }
     } catch (error) {
-      console.error("Error in handleSearch:", error);
-      setError("Error searching for skin. Please try again.");
+      console.error('Error in handleSearch:', error);
+      setError('Error searching for skin. Please try again.');
     }
   };
-  
+
   const readFile = (file, index, onUpload) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         onUpload(index, e.target.result);
       } catch (error) {
-        console.error("Error in onUpload callback:", error);
-        setError("Error processing uploaded skin.");
+        console.error('Error in onUpload callback:', error);
+        setError('Error processing uploaded skin.');
       }
     };
     reader.onerror = (error) => {
-      console.error("FileReader error:", error);
-      setError("Unable to read the selected file.");
+      console.error('FileReader error:', error);
+      setError('Unable to read the selected file.');
     };
     reader.readAsDataURL(file);
   };
@@ -85,7 +85,7 @@ const SkinUploader = ({
     try {
       onDelete(index);
     } catch (error) {
-      console.error("Error in handleDelete:", error);
+      console.error('Error in handleDelete:', error);
     }
   };
 
@@ -96,7 +96,7 @@ const SkinUploader = ({
         setError(null);
       }
     } catch (error) {
-      console.error("Error in handleSearchInputChange:", error);
+      console.error('Error in handleSearchInputChange:', error);
     }
   };
 
@@ -116,15 +116,9 @@ const SkinUploader = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          Skin {index + 1}
-        </CardTitle>
+        <CardTitle>Skin {index + 1}</CardTitle>
         {skin && (
-          <Button
-            onClick={handleDelete}
-            aria-label="Delete skin"
-            size="icon"
-          >
+          <Button onClick={handleDelete} aria-label="Delete skin" size="icon">
             X
           </Button>
         )}
@@ -148,9 +142,7 @@ const SkinUploader = ({
             </Button>
           </div>
           {/* Error message from fetchskin */}
-          <div className="text-red-600 text-sm mt-2">
-            {error}
-          </div>
+          <div className="text-red-600 text-sm mt-2">{error}</div>
         </form>
         {skin ? (
           <div className="flex items-center justify-center">
@@ -171,7 +163,9 @@ const SkinUploader = ({
                 className="hidden"
               />
               <Upload className="w-8 h-8 text-text-white mb-2" />
-              <span className="font-minecraft text-text-white text-shadow-minecraft">Upload Skin</span>
+              <span className="font-minecraft text-text-white text-shadow-minecraft">
+                Upload Skin
+              </span>
             </label>
           </div>
         )}

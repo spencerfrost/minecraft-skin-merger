@@ -1,21 +1,21 @@
-import fs from "fs/promises";
-import path from "path";
-import sharp from "sharp";
-import config from "../config/config.js";
+import fs from 'fs/promises';
+import path from 'path';
+import sharp from 'sharp';
+import config from '../config/config.js';
 
 const regions = {
   Head: { left: 0, top: 0, width: 32, height: 16 },
   Hat: { left: 32, top: 0, width: 32, height: 16 },
   Body: { left: 16, top: 16, width: 24, height: 16 },
   Jacket: { left: 16, top: 32, width: 24, height: 16 },
-  "Left Arm": { left: 32, top: 48, width: 16, height: 16 },
-  "Left Sleeve": { left: 48, top: 48, width: 16, height: 16 },
-  "Right Arm": { left: 40, top: 16, width: 16, height: 16 },
-  "Right Sleeve": { left: 40, top: 32, width: 16, height: 16 },
-  "Left Leg": { left: 16, top: 48, width: 16, height: 16 },
-  "Left Pant": { left: 0, top: 48, width: 16, height: 16 },
-  "Right Leg": { left: 0, top: 16, width: 16, height: 16 },
-  "Right Pant": { left: 0, top: 32, width: 16, height: 16 },
+  'Left Arm': { left: 32, top: 48, width: 16, height: 16 },
+  'Left Sleeve': { left: 48, top: 48, width: 16, height: 16 },
+  'Right Arm': { left: 40, top: 16, width: 16, height: 16 },
+  'Right Sleeve': { left: 40, top: 32, width: 16, height: 16 },
+  'Left Leg': { left: 16, top: 48, width: 16, height: 16 },
+  'Left Pant': { left: 0, top: 48, width: 16, height: 16 },
+  'Right Leg': { left: 0, top: 16, width: 16, height: 16 },
+  'Right Pant': { left: 0, top: 32, width: 16, height: 16 },
 };
 
 export default async function mergeSkins(req, res) {
@@ -24,19 +24,19 @@ export default async function mergeSkins(req, res) {
     try {
       selectedParts = JSON.parse(req.body.selectedParts);
     } catch (parseError) {
-      console.error("Error parsing selectedParts:", parseError);
-      return res.status(400).json({ error: "Invalid selectedParts data" });
+      console.error('Error parsing selectedParts:', parseError);
+      return res.status(400).json({ error: 'Invalid selectedParts data' });
     }
 
     const skins = req.files;
 
     if (!selectedParts || typeof selectedParts !== 'object') {
-      console.error("Invalid selectedParts data:", selectedParts);
-      return res.status(400).json({ error: "Invalid selectedParts data" });
+      console.error('Invalid selectedParts data:', selectedParts);
+      return res.status(400).json({ error: 'Invalid selectedParts data' });
     }
 
     if (!skins || skins.length === 0) {
-      return res.status(400).json({ error: "No skin files uploaded" });
+      return res.status(400).json({ error: 'No skin files uploaded' });
     }
 
     const skinMap = new Map();
@@ -87,24 +87,31 @@ export default async function mergeSkins(req, res) {
       .toBuffer();
 
     const outputFileName = `merged-skin-${Date.now()}.png`;
-    const outputPath = path.join(config.PUBLIC_DIR, 'merged-skins', outputFileName);
+    const outputPath = path.join(
+      config.PUBLIC_DIR,
+      'merged-skins',
+      outputFileName
+    );
 
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, mergedSkinBuffer);
 
     const mergedSkinUrl = `/public/merged-skins/${outputFileName}`;
     res.json({ mergedSkinUrl });
-
   } catch (error) {
-    console.error("Error merging skins:", error);
-    res.status(500).json({ error: "Failed to merge skins", message: error.message });
+    console.error('Error merging skins:', error);
+    res
+      .status(500)
+      .json({ error: 'Failed to merge skins', message: error.message });
   } finally {
     if (req.files) {
       await Promise.all(
         req.files.map((skin) =>
-          fs.unlink(skin.path).catch((err) =>
-            console.error(`Failed to delete file ${skin.path}:`, err)
-          )
+          fs
+            .unlink(skin.path)
+            .catch((err) =>
+              console.error(`Failed to delete file ${skin.path}:`, err)
+            )
         )
       );
     }

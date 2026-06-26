@@ -17,7 +17,7 @@ const upload = multer({
       return cb(error, false);
     }
     cb(null, true);
-  }
+  },
 });
 
 export const uploadSkin = upload.single('skin');
@@ -28,7 +28,7 @@ export async function processSkinUpload(req, res) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.png`;
+    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
     const filePath = path.join(config.PUBLIC_DIR, 'uploads', fileName);
 
     // Process and save the image
@@ -38,7 +38,6 @@ export async function processSkinUpload(req, res) {
       .toFile(filePath);
 
     res.json({ fileName });
-
   } catch (error) {
     console.error('File upload error:', error);
     res.status(500).json({ error: 'File upload failed' });

@@ -1,7 +1,13 @@
 import React from 'react';
-import SkinUploader from "../../../components/SkinUploader";
+import SkinUploader from '../../../components/SkinUploader';
 
-const SkinUploaderSection = ({ skins, selectedParts, handleSkinUpload, handleSkinDelete, handlePartSelection }) => {
+const SkinUploaderSection = ({
+  skins,
+  selectedParts,
+  handleSkinUpload,
+  handleSkinDelete,
+  handlePartSelection,
+}) => {
   const renderSkinUploaders = (startIndex, endIndex) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 sm:gap-4">
       {skins.slice(startIndex, endIndex).map((skin, index) => (
@@ -23,9 +29,7 @@ const SkinUploaderSection = ({ skins, selectedParts, handleSkinUpload, handleSki
       <div className="lg:col-span-1 order-2 lg:order-1">
         {renderSkinUploaders(0, 2)}
       </div>
-      <div className="lg:col-span-1 order-3">
-        {renderSkinUploaders(2, 4)}
-      </div>
+      <div className="lg:col-span-1 order-3">{renderSkinUploaders(2, 4)}</div>
     </>
   );
 };
